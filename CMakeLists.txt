@@ -18,4 +18,3 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/glm)
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 target_link_libraries(CG -L -lglew32s -lOpenGL32 -lglfw3dll )
-
