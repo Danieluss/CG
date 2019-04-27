@@ -1985,7 +1985,7 @@ std::tr1::regex_iterator<*>{
 				#([end] : $e._End),
 				#([pregex] : $e._MyRe),
 				#([flags] : $e._Flags),
-				#([match] : $e._MyVal)
+				#([triggered] : $e._MyVal)
 			)
 		)
 	)

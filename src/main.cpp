@@ -2,38 +2,33 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include "window.hpp"
+#include "looper.hpp"
+#include "input_triggers.hpp"
+#include "listener_manager.hpp"
 
-int main()
-{
-    GLFWwindow* window;
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+using namespace pr;
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
+int main() {
+    try {
+        Window::init();
+        Window window;
+        Looper looper( window );
+        ListenerManager::instance().addButtonObs(
+                ButtonObserver()
+                    .callback( [](int key, int action, int mods)->void{ std::cout<<action<<std::endl;} )
+                    .trigger( build< ButtonTrigger >()
+                            .key( GLFW_KEY_UP )
+                            .action( GLFW_PRESS )
+                            .get() ) );
+        ListenerManager::instance().hook( window );
+        while( !glfwWindowShouldClose( window )) {
+            looper.loop();
+        }
+    } catch( ... ) {
+
     }
-
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
-
     glfwTerminate();
+
     return 0;
 }

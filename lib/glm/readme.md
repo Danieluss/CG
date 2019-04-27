@@ -944,7 +944,7 @@ generation distribution
 ---
 ### GLM 0.9.A.2 - 2010-02-20
 - Improved some possible errors messages
-- Improved declarations and definitions match
+- Improved declarations and definitions triggered
 
 ---
 ### GLM 0.9.A.1 - 2010-02-09
