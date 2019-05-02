@@ -19,12 +19,24 @@ namespace pr {
 
         static int __init;
 
-        static void init();
+        static void init() {
+            __init = glfwInit();
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        }
 
         Window( int width = DEF_WIDTH,
                 int height = DEF_HEIGHT,
                 const char *name = DEF_NAME,
-                bool makeContext = true );
+                bool makeContext = true ) {
+            gwindow = glfwCreateWindow( width, height, name,
+                                       NULL, NULL );
+            if( makeContext )
+                glfwMakeContextCurrent( gwindow );
+            if( __init == -1 || !gwindow )
+                throw ( "bad init" );
+        };
 
         Window( const char* name, bool makeContext ) : Window( DEF_WIDTH, DEF_HEIGHT, name, makeContext ){}
 
