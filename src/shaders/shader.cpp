@@ -3,7 +3,7 @@
 
 namespace pr {
     Shader::Shader() {
-        sp=new ShaderProgram("src/v_test.glsl",NULL,"src/f_test.glsl"); //path relative to executable
+        sp=new ShaderProgram("res/shaders/v_test.glsl",NULL,"res/shaders/f_test.glsl"); //path relative to executable
         shaderId = sp->getShaderId();
     }
     Shader::~Shader() {

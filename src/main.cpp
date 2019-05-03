@@ -5,9 +5,9 @@
 #include <assimp/Importer.hpp>
 #include "window.hpp"
 #include "looper.hpp"
-#include "input_triggers.hpp"
-#include "listener_manager.hpp"
-#include "shader.hpp"
+#include "event_handling/input_triggers.hpp"
+#include "event_handling/listener_manager.hpp"
+#include "shaders/shader.hpp"
 
 void _deb( std::ostream &out, std::string &line_separator, std::string &separator ) {
     out<<line_separator;

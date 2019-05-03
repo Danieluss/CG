@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "window.hpp"
-#include "shader.hpp"
+#include "shaders/shader.hpp"
 
 namespace pr {
 
