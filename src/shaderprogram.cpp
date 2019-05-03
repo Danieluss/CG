@@ -16,29 +16,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "shaderprogram.h"
 
 
-ShaderProgram *spLambert;
-ShaderProgram *spConstant;
-ShaderProgram *spTextured;
-ShaderProgram *spColored;
-ShaderProgram *spLambertTextured;
-
-void initShaders(){
-    spLambert=new ShaderProgram("v_lambert.glsl",NULL,"f_lambert.glsl");
-    spConstant=new ShaderProgram("v_constant.glsl",NULL,"f_constant.glsl");
-	spTextured=new ShaderProgram("v_textured.glsl",NULL,"f_textured.glsl");
-    spColored=new ShaderProgram("v_colored.glsl",NULL,"f_colored.glsl");
-    spLambertTextured=new ShaderProgram("v_lamberttextured.glsl",NULL,"f_lamberttextured.glsl");
-}
-
-void freeShaders(){
-    delete spLambert;
-	delete spConstant;
-    delete spTextured;
-    delete spColored;
-    delete spLambertTextured;
-}
-
-
 //Procedure reads a file into an array of chars
 char* ShaderProgram::readFile(const char* fileName) {
 	int filesize;
@@ -147,7 +124,9 @@ ShaderProgram::~ShaderProgram() {
 	glDeleteProgram(shaderProgram);
 }
 
-
+unsigned int ShaderProgram::getShaderId() {
+	return shaderProgram;
+}
 //Make the shader program active
 void ShaderProgram::use() {
 	glUseProgram(shaderProgram);

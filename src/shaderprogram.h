@@ -31,18 +31,10 @@ private:
 public:
 	ShaderProgram(const char* vertexShaderFile,const char* geometryShaderFile,const char* fragmentShaderFile);
 	~ShaderProgram();
+	unsigned int getShaderId();
 	void use(); //Turns on the shader program
 	GLuint u(const char* variableName); //Returns the slot number corresponding to the uniform variableName
 	GLuint a(const char* variableName); //Returns the slot number corresponding to the attribute variableName
 };
-
-extern ShaderProgram *spConstant;
-extern ShaderProgram *spLambert;
-extern ShaderProgram *spTextured;
-extern ShaderProgram *spColored;
-extern ShaderProgram *spLambertTextured;
-
-void initShaders();
-void freeShaders();
 
 #endif

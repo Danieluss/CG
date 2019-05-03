@@ -1,6 +1,6 @@
 CC = g++
 LIBS=-lGL -lglfw -lGLEW
-CFLAGS = -g -std=c++11 -O3 -I include -I lib/glm
+CFLAGS = -g -std=c++11 -O3 -I include -I lib/glm -I lib/assimp/include
 
 SRCS=main.cpp observer.cpp window.cpp looper.cpp shader.cpp shaderprogram.cpp
 OBJS = $(addprefix obj/,$(SRCS:.cpp=.o))
