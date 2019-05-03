@@ -3,7 +3,11 @@ project(CG)
 
 set(CMAKE_CXX_STANDARD 11)
 
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -DGLEW_STATIC")
+
 file(GLOB_RECURSE SOURCE_FILES
+        ${CMAKE_SOURCE_DIR}/lib/glew/*.c
+        ${CMAKE_SOURCE_DIR}/lib/glew/*.cpp
         ${CMAKE_SOURCE_DIR}/src/*.c
         ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
@@ -15,6 +19,24 @@ include_directories(${CMAKE_BINARY_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/lib/glm)
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/lib/assimp)
+
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(Assimp REQUIRED)
+
+message(${ASSIMP_INCLUDE_DIRS})
+message(${ASSIMP_LIBRARIES})
+
+include_directories(${ASSIMP_INCLUDE_DIRS})
+link_libraries(${ASSIMP_LIBRARIES})
+
+include_directories(${GLEW_INCLUDE_DIRS})
+link_libraries(${GLEW_LIBRARIES})
+
+include_directories(${OPENGL_INCLUDE_DIRS})
+link_libraries(${OPENGL_LIBRARIES})
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES} )
-target_link_libraries(CG -L -lglew32s -lOpenGL32 -lglfw3dll )
+
+target_link_libraries(CG -L -lglew32s -lglfw3dll)

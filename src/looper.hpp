@@ -3,37 +3,28 @@
 
 #include <iostream>
 #include "window.hpp"
+#include "shader.hpp"
 
 namespace pr {
 
     class Looper {
 
         Window& window;
+        Shader& shader;
 
-        void processInput() {
-            glfwPollEvents();
-        }
+        void processInput();
 
-        void render() {
-            glClearColor( 0.2, 0.3, 0.3, 1.0 );
-            glClear( GL_COLOR_BUFFER_BIT );
-        }
+        void render();
 
-        void swap() {
-            glfwSwapBuffers( window );
-        }
+        void swap();
 
     public:
 
-        Looper( Window& window ) : window( window ) {}
+        Looper( Window& window, Shader &shader) : window( window ), shader(shader) {}
 
-        Looper( Window&& window ) : window( window ) {}
+        Looper( Window&& window, Shader &shader) : window( window ), shader(shader) {}
 
-        void loop() {
-            processInput();
-            render();
-            swap();
-        }
+        void loop();
 
     };
 
