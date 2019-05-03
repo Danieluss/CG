@@ -46,21 +46,21 @@ int main() {
         Window window;
         GLenum err;
         Assimp::Importer importer;
-        if(( err = glewInit()) != GLEW_OK ) { //Initialize GLEW library
-            fprintf(stderr, "Can't initialize GLEW: %s\n", glewGetErrorString( err ));
-            exit( EXIT_FAILURE );
+        if ((err=glewInit()) != GLEW_OK) { //Initialize GLEW library
+            fprintf(stderr, "Can't initialize GLEW: %s\n", glewGetErrorString(err));
+            exit(EXIT_FAILURE);
         }
         Shader test;
-        Looper looper( window, test );
+        Looper looper(window, test);
         ListenerManager::instance().addButtonObs(
                 ButtonObserver()
-                        .callback( []( int key, int action, int mods ) -> void { std::cout<<action<<std::endl; } )
-                        .trigger( build< ButtonTrigger >()
-                                          .key( GLFW_KEY_UP )
-                                          .action( GLFW_PRESS )
-                                          .get()));
+                    .callback( [](int key, int action, int mods)->void{ std::cout<<action<<std::endl;} )
+                    .trigger( build< ButtonTrigger >()
+                            .key( GLFW_KEY_UP )
+                            .action( GLFW_PRESS )
+                            .get() ) );
         ListenerManager::instance().hook( window );
-        while( !glfwWindowShouldClose( window )) {
+        while(!glfwWindowShouldClose(window)) {
             looper.loop();
         }
     } catch( ... ) {
