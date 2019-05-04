@@ -34,8 +34,9 @@ vec3 getDirectionalLight(DirectionalLight lightSource, vec3 ka, vec3 kd, vec3 ks
 
     vec3 h = normalize(dir+viewerVector);
     float dp = max(dot(norm, h), 0.0);
-    vec3 specular = ks*pow(dp, k);
-    return ambient+diffuse;
+    vec3 specular = ks*pow(dp, k)/3;
+    
+    return ambient+diffuse+specular;
 }
 
 void main(void) {

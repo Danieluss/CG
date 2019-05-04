@@ -17,7 +17,7 @@ namespace pr {
         shader.setUniform("material.diffuse", x);
         glm::vec3 spec = glm::vec3(1.0, 1.0, 1.0);
         shader.setUniform("material.specular", spec);
-        float shi = 1.0;
+        float shi = 100.0;
         shader.setUniform("material.shininess", shi);
         shader.setAttrib("iPos", 4, myCubeVertices);
         shader.setAttrib("iTexCoord", 2, myCubeTexCoords);
@@ -36,8 +36,8 @@ namespace pr {
     Looper::Looper( Window& window, Shader &shader) : window( window ), shader(shader) {
         textures.push_back(Texture("bricks.png", 1024, 1024, 3));
         textures.push_back(Texture("metal.png", 512, 512, 3));
-        directionalLights.push_back(DirectionalLight(glm::vec3(-1.0, 1.0, 2.0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)));
-        //directionalLights.push_back(DirectionalLight(glm::vec3(1.0, -1.0, 2.0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0)));
+        directionalLights.push_back(DirectionalLight(glm::vec3(1.0, 1.0, 2.0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)));
+        directionalLights.push_back(DirectionalLight(glm::vec3(1.0, -1.0, 2.0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0)));
     }
     Looper::~Looper() {
         for(Texture t : textures) {
@@ -56,9 +56,9 @@ namespace pr {
 
     void Looper::render() {
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glm::vec3 cameraLocation = glm::vec3(-5, -5, 3);
+        glm::vec3 cameraLocation = glm::vec3(-5, -5, 6);
         glm::mat4 V = glm::lookAt(
-            glm::vec3(-5,-5,3),
+            cameraLocation,
             glm::vec3(0,0,0),
             glm::vec3(0,0,1)
         );
@@ -78,14 +78,16 @@ namespace pr {
         float angle = 0.0*M_PI/180.0;
         M = glm::rotate(M, angle, glm::vec3(1,0,0));
         shader.setUniform("M", M);
+        glm::mat4 M1;
 
-        glm::mat4 M1 = glm::scale(M, glm::vec3(5.0f, 5.0f, 0.2f));
+        M1 = glm::translate(M, glm::vec3(0, 0, 2));
+        textures[0].activate(0);
+        drawCube(M1);
+
+        M1 = glm::scale(M, glm::vec3(5.0f, 5.0f, 0.2f));
         textures[1].activate(0);
         drawCube(M1);
 
-        M1 = glm::translate(M, glm::vec3(0, 0, 1));
-        textures[0].activate(0);
-        drawCube(M1);
     }
 
     void Looper::swap() {
