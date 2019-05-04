@@ -1,9 +1,11 @@
 #ifndef CG_LOOPER_HPP
 #define CG_LOOPER_HPP
 
-#include <iostream>
+#include <vector>
 #include "window.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
+#include "directionalLight.hpp"
 
 namespace pr {
 
@@ -11,6 +13,8 @@ namespace pr {
 
         Window& window;
         Shader& shader;
+        std::vector<Texture> textures;
+        std::vector<DirectionalLight> directionalLights;
 
         void processInput();
 
@@ -18,11 +22,13 @@ namespace pr {
 
         void swap();
 
+        void drawCube(glm::mat4);
+
     public:
 
-        Looper( Window& window, Shader &shader) : window( window ), shader(shader) {}
+        Looper( Window& window, Shader &shader);
 
-        Looper( Window&& window, Shader &shader) : window( window ), shader(shader) {}
+        ~Looper();
 
         void loop();
 
