@@ -11,7 +11,7 @@
 using namespace std;
 
 namespace pr {
-    void Looper::drawCube(glm::mat4 M) {
+    void Looper::drawCube(Shader &shader, glm::mat4 M) {
         int x = 0;
         shader.setUniform("material.ambient", x);
         shader.setUniform("material.diffuse", x);
@@ -25,19 +25,36 @@ namespace pr {
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(M)));
         shader.setUniform("M", M);
         shader.setUniform("normalMatrix", normalMatrix);
-        // for(int i=0; i < 3; i++) {
-        //     for(int j=0; j < 3; j++) {
-        //         cout << normalMatrix[i][j] << " ";
-        //     }
-        //     cout << endl;
-        // }
         shader.draw({"iPos", "iTexCoord", "iNormal"}, GL_TRIANGLES, myCubeVertexCount);
     }
-    Looper::Looper( Window& window, Shader &shader) : window( window ), shader(shader) {
+
+    void Looper::renderScene(Shader &shader) {
+        glm::mat4 M = glm::mat4(1.0);
+        float angle = 0.0*M_PI/180.0;
+        M = glm::rotate(M, angle, glm::vec3(1,0,0));
+        shader.setUniform("M", M);
+        glm::mat4 M1;
+
+        M1 = glm::translate(M, glm::vec3(0, 0, 2));
+        textures[0].activate(0);
+        drawCube(shader, M1);
+
+        M1 = glm::translate(M, glm::vec3(-3, 3, 5));
+        textures[0].activate(0);
+        drawCube(shader, M1);
+
+        M1 = glm::scale(M, glm::vec3(10.0f, 10.0f, 0.2f));
+        textures[1].activate(0);
+        drawCube(shader, M1);
+    }
+
+    Looper::Looper( Window& window) : window( window ), shader("src/v_main.glsl", "src/f_main.glsl"), shadowShader("src/v_shadow.glsl", "src/f_shadow.glsl") {
+        //frame buffer for shadows
+        glGenFramebuffers(1, &depthMapFrameBuffer);
         textures.push_back(Texture("bricks.png", 1024, 1024, 3));
         textures.push_back(Texture("metal.png", 512, 512, 3));
-        directionalLights.push_back(DirectionalLight(glm::vec3(1.0, 1.0, 2.0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(1.0, 1.0, 1.0), glm::vec3(1.0, 1.0, 1.0)));
-        directionalLights.push_back(DirectionalLight(glm::vec3(1.0, -1.0, 2.0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0)));
+        directionalLights.push_back(DirectionalLight(glm::vec3(-10.0, 10.0, 20.0), glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0)));
+        directionalLights.push_back(DirectionalLight(glm::vec3(10.0, -10.0, 20.0), glm::vec3(0.3, 0.3, 0.3), glm::vec3(0.5, 0.5, 0.5), glm::vec3(1.0, 1.0, 1.0)));
     }
     Looper::~Looper() {
         for(Texture t : textures) {
@@ -55,8 +72,16 @@ namespace pr {
     }
 
     void Looper::render() {
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glm::vec3 cameraLocation = glm::vec3(-5, -5, 6);
+        int numberOfDirectionalLights = min((int)directionalLights.size(), 4);
+
+        for(int i=0; i < numberOfDirectionalLights; i++) {
+            directionalLights[i].generateShadows(shadowShader, depthMapFrameBuffer, cameraLocation);
+            renderScene(shadowShader);
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, window.width, window.height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glm::mat4 V = glm::lookAt(
             cameraLocation,
             glm::vec3(0,0,0),
@@ -68,26 +93,11 @@ namespace pr {
         shader.setUniform("V", V);
         shader.setUniform("cameraLocation", cameraLocation);
 
-        int numberOfDirectionalLights = (int)directionalLights.size();
         shader.setUniform("numberOfDirectionalLights", numberOfDirectionalLights);
         for(int i=0; i < directionalLights.size(); i++) {
             directionalLights[i].addToScene(shader, i);
         }
-
-        glm::mat4 M = glm::mat4(1.0);
-        float angle = 0.0*M_PI/180.0;
-        M = glm::rotate(M, angle, glm::vec3(1,0,0));
-        shader.setUniform("M", M);
-        glm::mat4 M1;
-
-        M1 = glm::translate(M, glm::vec3(0, 0, 2));
-        textures[0].activate(0);
-        drawCube(M1);
-
-        M1 = glm::scale(M, glm::vec3(5.0f, 5.0f, 0.2f));
-        textures[1].activate(0);
-        drawCube(M1);
-
+        renderScene(shader);
     }
 
     void Looper::swap() {

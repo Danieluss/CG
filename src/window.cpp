@@ -16,7 +16,7 @@ namespace pr {
     Window::Window( int width,
                 int height,
                 const char *name,
-                bool makeContext) {
+                bool makeContext) : width(width), height(height) {
             gwindow = glfwCreateWindow( width, height, name, NULL, NULL );
             if( makeContext )
                 glfwMakeContextCurrent( gwindow );

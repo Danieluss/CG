@@ -12,9 +12,11 @@ namespace pr {
     class Looper {
 
         Window& window;
-        Shader& shader;
+        Shader shader;
+        Shader shadowShader;
         std::vector<Texture> textures;
         std::vector<DirectionalLight> directionalLights;
+        unsigned int depthMapFrameBuffer;
 
         void processInput();
 
@@ -22,11 +24,12 @@ namespace pr {
 
         void swap();
 
-        void drawCube(glm::mat4);
+        void drawCube(Shader &shader, glm::mat4);
+        void renderScene(Shader &shader);
 
     public:
 
-        Looper( Window& window, Shader &shader);
+        Looper( Window& window);
 
         ~Looper();
 

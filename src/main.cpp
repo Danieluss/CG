@@ -50,8 +50,7 @@ int main() {
             fprintf(stderr, "Can't initialize GLEW: %s\n", glewGetErrorString(err));
             exit(EXIT_FAILURE);
         }
-        Shader shader;
-        Looper looper(window, shader);
+        Looper looper(window);
         ListenerManager::instance().addButtonObs(
                 ButtonObserver()
                     .callback( [](int key, int action, int mods)->void{ std::cout<<action<<std::endl;} )
