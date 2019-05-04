@@ -34,18 +34,21 @@ namespace pr {
         using Type = Observer<T, TArgs...>;
         using Callback = std::function< void( TArgs... ) >;
 
+        bool trigb = false;
         T trig;
         Callback callb;
 
     public:
 
-        Observer(){
-
+        template< class C >
+        Observer( C&& callback ) {
+            callb = callback;
         }
 
         template< class C >
         Observer( T&& trigger, C&& callback ) {
             callb = callback;
+            trigb = true;
             trig = trigger;
         }
 
@@ -57,11 +60,13 @@ namespace pr {
 
         Type& trigger( const T& trigger ) {
             this->trig = trigger;
+            trigb = true;
             return *this;
         }
 
         Type& trigger( T&& trigger ) {
             this->trig = trigger;
+            trigb = true;
             return *this;
         }
 
@@ -70,7 +75,7 @@ namespace pr {
         }
 
         void update( TArgs... args ) const {
-            if( trig.triggered( args... )) {
+            if( !trigb || trig.triggered( args... )) {
                 callb( args... );
             }
         }
@@ -79,7 +84,7 @@ namespace pr {
 
     using ButtonObserver = Observer< ButtonTrigger, int, int, int >;
 
-    using MotionObserver = Observer< MotionTrigger, double, double >;
+    using MotionObserver = Observer< MotionTrigger, glm::vec2 >;
 
 }
 #endif //CG_OBSERVER_HPP

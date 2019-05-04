@@ -40,6 +40,8 @@ namespace pr {
             glfwDestroyWindow( gwindow );
         }
 
+        glm::vec2 size();
+
     };
 
 }

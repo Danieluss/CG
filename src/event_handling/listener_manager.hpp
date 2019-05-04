@@ -25,16 +25,20 @@ namespace std {
     };
 
     template<>
-    struct equal_to< pr::MotionObserver > : public equal_to< pr::Stamped >{};
+    struct equal_to< pr::MotionObserver > : public equal_to< pr::Stamped > {
+    };
 
     template<>
-    struct equal_to< pr::ButtonObserver > : public equal_to< pr::Stamped >{};
+    struct equal_to< pr::ButtonObserver > : public equal_to< pr::Stamped > {
+    };
 
     template<>
-    struct hash< pr::MotionObserver > : public hash< pr::Stamped > {};
+    struct hash< pr::MotionObserver > : public hash< pr::Stamped > {
+    };
 
     template<>
-    struct hash< pr::ButtonObserver > : public hash< pr::Stamped > {};
+    struct hash< pr::ButtonObserver > : public hash< pr::Stamped > {
+    };
 
 }
 
@@ -47,6 +51,9 @@ namespace pr {
         std::unordered_set< MotionObserver > mousePositionObservers;
         std::unordered_set< MotionObserver > scrollObservers;
         std::unordered_set< ButtonObserver > buttonObservers;
+        Window* window = nullptr;
+        double lastX = -1, lastY = -1;
+        bool lockCursor = true;
 
         void _keyNotify( int key, int action, int mods, std::unordered_set< ButtonObserver > &observers ) {
             for( auto it = observers.begin(); it != observers.end(); it++ ) {
@@ -55,14 +62,22 @@ namespace pr {
         }
 
         ListenerManager() {}
-        double lastX = -1, lastY = -1;
 
     public:
 
         ListenerManager( const ListenerManager & ) = delete;
+
         void operator=( const ListenerManager & ) = delete;
 
-        static ListenerManager& instance() {
+        bool isLockCursor() const {
+            return lockCursor;
+        }
+
+        void setLockCursor( bool lockCursor ) {
+            ListenerManager::lockCursor = lockCursor;
+        }
+
+        static ListenerManager &instance() {
             static ListenerManager instance;
             return instance;
         }
@@ -74,22 +89,29 @@ namespace pr {
 
         void positionNotify( double x, double y ) {
             for( auto it = mousePositionObservers.begin(); it != mousePositionObservers.end(); it++ ) {
-                it->update( x, y );
+                it->update( glm::vec2{x, y} );
             }
             double dx = x - lastX;
             double dy = y - lastY;
-            if( x != -1 && ( dx != 0 || dy != 0 )) {
+            if( lastX != -1 && ( dx != 0 || dy != 0 )) {
                 for( auto it = motionObservers.begin(); it != motionObservers.end(); it++ ) {
-                    it->update( dx, dy );
+                    it->update( glm::vec2{dx, dy} );
                 }
             }
-            lastX = x;
-            lastY = y;
+
+            if( lockCursor ) {
+                lastX = window->size().x/2;
+                lastY = window->size().y/2;
+                glfwSetCursorPos( *window, window->size().x/2, window->size().y/2 );
+            } else {
+                lastX = x;
+                lastY = y;
+            }
         }
 
         void scrollNotify( double x, double y ) {
             for( auto it = scrollObservers.begin(); it != scrollObservers.end(); it++ ) {
-                it->update( x, y );
+                it->update( glm::vec2{x, y} );
             }
         }
 
@@ -109,7 +131,8 @@ namespace pr {
             instance().scrollNotify( x, y );
         }
 
-        void hook( Window &window ) {
+        void hook( Window& window ) {
+            this->window = &window;
             glfwSetKeyCallback( window, ListenerManager::keyNotify );
             glfwSetMouseButtonCallback( window, ListenerManager::mouseKeyNotify );
             glfwSetCursorPosCallback( window, ListenerManager::mousePositionNotify );
@@ -123,12 +146,12 @@ namespace pr {
         }
 
         void remove( ButtonObserver observer ) {
-            buttonObservers.erase( buttonObservers.find( observer ) );
+            buttonObservers.erase( buttonObservers.find( observer ));
         }
 
         void remove( MotionObserver observer ) {
-            motionObservers.erase( motionObservers.find( observer ) );
-            scrollObservers.erase( scrollObservers.find( observer ) );
+            motionObservers.erase( motionObservers.find( observer ));
+            scrollObservers.erase( scrollObservers.find( observer ));
         }
 
         void addMappedButtonObs( int key, ButtonObserver observer ) {
@@ -157,5 +180,7 @@ namespace pr {
     };
 
 }
+
+#define ListenerManager ListenerManager::instance()
 
 #endif //CG_LISTENERMANAGER_HPP
