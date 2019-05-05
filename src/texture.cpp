@@ -8,6 +8,7 @@
 
 namespace pr {
     Texture::Texture( std::string filename, int width, int height, int nrChannels ) {
+        filename = "res/textures/" + filename;
         glGenTextures( 1, &textureId );
         glBindTexture( GL_TEXTURE_2D, textureId );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );

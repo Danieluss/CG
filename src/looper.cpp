@@ -53,12 +53,11 @@ namespace pr {
     }
 
     Looper::Looper( Window &window ) : window( window ),
-                                       shader( "src/shaders/glsl/v_main.glsl", "src/shaders/glsl/f_main.glsl" ),
-                                       shadowShader( "src/shaders/glsl/v_shadow.glsl",
-                                                     "src/shaders/glsl/f_shadow.glsl" ) {
+                                       shader( "v_main.glsl", "f_main.glsl" ),
+                                       shadowShader( "v_shadow.glsl",
+                                                     "f_shadow.glsl" ) {
         initListeners();
         initScene();
-        //frame buffer for shadows
     }
 
     Looper::~Looper() {
@@ -149,9 +148,10 @@ namespace pr {
     }
 
     void Looper::initScene() {
+        mainCamera.position.val = glm::vec3(-5,-5,3);
         glGenFramebuffers( 1, &depthMapFrameBuffer );
-        textures.push_back( Texture( "res/textures/bricks.png", 1024, 1024, 3 ));
-        textures.push_back( Texture( "res/textures/metal.png", 512, 512, 3 ));
+        textures.push_back( Texture( "bricks.png", 1024, 1024, 3 ));
+        textures.push_back( Texture( "metal.png", 512, 512, 3 ));
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
