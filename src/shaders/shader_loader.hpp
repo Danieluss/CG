@@ -5,23 +5,27 @@
 #include <fstream>
 #include <sstream>
 
-class ShaderLoader {
+namespace pr {
 
-public:
+    class ShaderLoader {
 
-    static std::string loadShader( std::string filename ) {
-        std::ifstream shaderFile;
-        try {
-            shaderFile.open( filename );
-            std::stringstream stream;
-            stream << shaderFile.rdbuf();
-            return stream.str();
-        } catch( ... ) {
-            throw "unable to read shader from file: " + filename;
+    public:
+
+        static std::string loadShader( std::string filename ) {
+            std::ifstream shaderFile;
+            try {
+                shaderFile.open( filename );
+                std::stringstream stream;
+                stream<<shaderFile.rdbuf();
+                return stream.str();
+            } catch( ... ) {
+                throw "unable to read shader from file: " + filename;
+            }
+            return nullptr;
         }
-        return nullptr;
-    }
 
-};
+    };
+
+}
 
 #endif //CG_SHADER_LOADER_HPP

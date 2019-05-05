@@ -3,54 +3,57 @@
 
 #include "glm/glm.hpp"
 
-struct Transformable {
-    virtual void transform( glm::mat4 &matrix ) = 0;
-};
+namespace pr {
 
-struct Positionable : virtual public Transformable {
+    struct Transformable {
+        virtual void transform( glm::mat4 &matrix ) = 0;
+    };
 
-    glm::vec3 val{0, 0, 0};
+    struct Positionable : virtual public Transformable {
 
-    operator glm::vec3();
+        glm::vec3 val{0, 0, 0};
 
-    void transform( glm::mat4 &matrix ) override;
+        operator glm::vec3();
 
-    virtual void translate( const glm::vec3 &offset );
+        void transform( glm::mat4 &matrix ) override;
 
-    virtual void translate( const double &x, const double &y = 0, const double &z = 0 );
+        virtual void translate( const glm::vec3 &offset );
 
-};
+        virtual void translate( const double &x, const double &y = 0, const double &z = 0 );
 
-enum Axis {
-    X, Y, Z
-};
+    };
 
-struct Rotatable : virtual public Transformable {
+    enum Axis {
+        X, Y, Z
+    };
 
-    glm::mat4 rotation;
+    struct Rotatable : virtual public Transformable {
 
-    operator glm::mat4();
+        glm::mat4 rotation;
 
-    void transform( glm::mat4 &matrix ) override;
+        operator glm::mat4();
 
-    virtual void rotate( const double &angleD, glm::vec3 axis );
+        void transform( glm::mat4 &matrix ) override;
 
-    virtual void rotate( const double &angleD, const Axis &axis );
+        virtual void rotate( const double &angleD, glm::vec3 axis );
 
-};
+        virtual void rotate( const double &angleD, const Axis &axis );
 
-struct Scalable : virtual public Transformable {
+    };
 
-    glm::vec3 scale_{1, 1, 1};
+    struct Scalable : virtual public Transformable {
 
-    operator glm::vec3();
+        glm::vec3 scale_{1, 1, 1};
 
-    void transform( glm::mat4 &matrix ) override;
+        operator glm::vec3();
 
-    virtual void scale( const glm::vec3 &scale );
+        void transform( glm::mat4 &matrix ) override;
 
-    virtual void scale( const double &x, const double &y = 1, const double &z = 1 );
+        virtual void scale( const glm::vec3 &scale );
 
-};
+        virtual void scale( const double &x, const double &y = 1, const double &z = 1 );
 
+    };
+
+}
 #endif //CG_MODEL_PROPERTIES_HPP

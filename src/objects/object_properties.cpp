@@ -2,59 +2,62 @@
 #include "objects/object_properties.hpp"
 #include "object_properties.hpp"
 
+namespace pr {
 
-void Positionable::translate( const glm::vec3 &offset ) {
-    val += offset;
-}
-
-void Positionable::translate( const double &x, const double &y, const double &z ) {
-    val += glm::vec3{ x, y, z };
-}
-
-void Positionable::transform( glm::mat4& matrix ) {
-    matrix = glm::translate( matrix, val );
-}
-
-Positionable::operator glm::vec3() {
-    return val;
-}
-
-void Rotatable::rotate( const double &angleD, const Axis& ax ) {
-    glm::vec3 axis;
-    if( ax == X ) {
-        axis = { 1, 0, 0 };
-    } else if( ax == Y ) {
-        axis = { 0, 1, 0 };
-    } else if( ax == Z ) {
-        axis = { 0, 0, 1 };
+    void Positionable::translate( const glm::vec3 &offset ) {
+        val += offset;
     }
-    rotate( angleD, axis );
-}
 
-void Rotatable::rotate( const double &angleD, glm::vec3 axis ) {
-    rotation = glm::rotate( rotation, static_cast<float>( angleD*M_PI/180.0 ), axis );
-}
+    void Positionable::translate( const double &x, const double &y, const double &z ) {
+        val += glm::vec3{x, y, z};
+    }
 
-void Rotatable::transform( glm::mat4 &matrix ) {
-    matrix = rotation * matrix;
-}
+    void Positionable::transform( glm::mat4 &matrix ) {
+        matrix = glm::translate( matrix, val );
+    }
 
-Rotatable::operator glm::mat4() {
-    return rotation;
-}
+    Positionable::operator glm::vec3() {
+        return val;
+    }
 
-void Scalable::scale( const double &x, const double &y, const double &z ) {
-    scale( { x, y, z } );
-}
+    void Rotatable::rotate( const double &angleD, const Axis &ax ) {
+        glm::vec3 axis;
+        if( ax == X ) {
+            axis = {1, 0, 0};
+        } else if( ax == Y ) {
+            axis = {0, 1, 0};
+        } else if( ax == Z ) {
+            axis = {0, 0, 1};
+        }
+        rotate( angleD, axis );
+    }
 
-void Scalable::scale( const glm::vec3 &scale ) {
-    scale_ = scale_ * scale;
-}
+    void Rotatable::rotate( const double &angleD, glm::vec3 axis ) {
+        rotation = glm::rotate( rotation, static_cast<float>( angleD*M_PI/180.0 ), axis );
+    }
 
-void Scalable::transform( glm::mat4 &matrix ) {
-    matrix = glm::translate( matrix, scale_ );
-}
+    void Rotatable::transform( glm::mat4 &matrix ) {
+        matrix = rotation*matrix;
+    }
 
-Scalable::operator glm::vec3() {
-    return scale_;
+    Rotatable::operator glm::mat4() {
+        return rotation;
+    }
+
+    void Scalable::scale( const double &x, const double &y, const double &z ) {
+        scale( {x, y, z} );
+    }
+
+    void Scalable::scale( const glm::vec3 &scale ) {
+        scale_ = scale_*scale;
+    }
+
+    void Scalable::transform( glm::mat4 &matrix ) {
+        matrix = glm::translate( matrix, scale_ );
+    }
+
+    Scalable::operator glm::vec3() {
+        return scale_;
+    }
+
 }

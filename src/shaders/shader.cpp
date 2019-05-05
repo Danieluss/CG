@@ -4,19 +4,19 @@
 namespace pr {
     Shader::Shader(const char *vertexShader, const char *fragmentShader) {
         sp=new ShaderProgram(vertexShader,NULL,fragmentShader); //path relative to executable
-        shaderId = sp->getShaderId();
+        id = sp->getShaderId();
     }
     Shader::~Shader() {
         delete sp;
     }
     void Shader::use() {
-        glUseProgram(shaderId);
+        glUseProgram(id);
     }
     unsigned int Shader::u(const char *name) {
-        return glGetUniformLocation(shaderId, name);
+        return glGetUniformLocation(id, name);
     }
     unsigned int Shader::a(const char *name) {
-        return glGetAttribLocation(shaderId, name);
+        return glGetAttribLocation(id, name);
     }
     void Shader::setUniform(const char *name, bool &value) {
         glUniform1i(u(name), value);

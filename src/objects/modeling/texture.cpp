@@ -3,13 +3,16 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
+#include "texture.hpp"
+
 
 #include<iostream>
 
 namespace pr {
+
     Texture::Texture( std::string filename, int width, int height, int nrChannels ) {
-        glGenTextures( 1, &textureId );
-        glBindTexture( GL_TEXTURE_2D, textureId );
+        glGenTextures( 1, &id );
+        glBindTexture( GL_TEXTURE_2D, id );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -26,11 +29,12 @@ namespace pr {
     }
 
     void Texture::deleteTexture() {
-        glDeleteTextures( 1, &textureId );
+        glDeleteTextures( 1, &id );
     }
 
     void Texture::activate( int num ) {
         glActiveTexture( GL_TEXTURE0 + num );
-        glBindTexture( GL_TEXTURE_2D, textureId );
+        glBindTexture( GL_TEXTURE_2D, id );
     }
+
 }
