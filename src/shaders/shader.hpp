@@ -4,7 +4,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtc/type_ptr.hpp>
 #include<vector>
-#include "shaderprogram.h"
+#include "shader_program.h"
 
 namespace pr {
     class Shader {

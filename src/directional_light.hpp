@@ -2,7 +2,7 @@
 #define CG_DIRLIGHT_HPP
 
 #include<glm/glm.hpp>
-#include"shader.hpp"
+#include"shaders/shader.hpp"
 
 namespace pr {
     class DirectionalLight {

@@ -5,9 +5,9 @@
 #include <assimp/Importer.hpp>
 #include "window.hpp"
 #include "looper.hpp"
-#include "input_triggers.hpp"
-#include "listener_manager.hpp"
-#include "shader.hpp"
+#include "event_handling/input_triggers.hpp"
+#include "event_handling/listener_manager.hpp"
+#include "shaders/shader.hpp"
 
 void _deb( std::ostream &out, std::string &line_separator, std::string &separator ) {
     out<<line_separator;
@@ -47,28 +47,22 @@ int main() {
         GLenum err;
         Assimp::Importer importer;
         ListenerManager.hook( window );
-        if ((err=glewInit()) != GLEW_OK) { //Initialize GLEW library
-            fprintf(stderr, "Can't initialize GLEW: %s\n", glewGetErrorString(err));
-            exit(EXIT_FAILURE);
+        if(( err = glewInit()) != GLEW_OK ) { //Initialize GLEW library
+            fprintf(stderr, "Can't initialize GLEW: %s\n", glewGetErrorString( err ));
+            exit( EXIT_FAILURE );
         }
-        Looper looper(window);
-        ListenerManager::instance().addButtonObs(
-                ButtonObserver()
-                    .callback( [](int key, int action, int mods)->void{ std::cout<<action<<std::endl;} )
-                    .trigger( build< ButtonTrigger >()
-                            .key( GLFW_KEY_UP )
-                            .action( GLFW_PRESS )
-                            .get() ) );
-        ListenerManager::instance().hook( window );
-        while(!glfwWindowShouldClose(window)) {
+        Looper looper( window );
+        while( !glfwWindowShouldClose( window )) {
             looper.loop();
         }
-    } catch(std::string &ex) {
-        deb(ex);
-    } catch(std::exception &ex) {
-        deb(ex.what());
+    } catch( const char *ex ) {
+        deb( ex );
+    } catch( std::string &ex ) {
+        deb( ex );
+    } catch( std::exception &ex ) {
+        deb( ex.what());
     } catch( ... ) {
-        deb("Unexpected exception");
+        deb( "Unexpected exception" );
     }
     glfwTerminate();
 

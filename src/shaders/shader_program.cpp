@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "shaderprogram.h"
+#include "shader_program.h"
 
 
 //Procedure reads a file into an array of chars
