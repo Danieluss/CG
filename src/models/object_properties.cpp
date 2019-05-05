@@ -4,19 +4,19 @@
 
 
 void Positionable::translate( const glm::vec3 &offset ) {
-    position += offset;
+    val += offset;
 }
 
 void Positionable::translate( const double &x, const double &y, const double &z ) {
-    position += glm::vec3{ x, y, z };
+    val += glm::vec3{ x, y, z };
 }
 
 void Positionable::transform( glm::mat4& matrix ) {
-    matrix = glm::translate( matrix, position );
+    matrix = glm::translate( matrix, val );
 }
 
 Positionable::operator glm::vec3() {
-    return position;
+    return val;
 }
 
 void Rotatable::rotate( const double &angleD, const Axis& ax ) {

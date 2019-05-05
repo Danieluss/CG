@@ -27,7 +27,7 @@ void Camera::moveDown( const float &time ) {
 }
 
 glm::mat4 Camera::view() {
-    return glm::lookAt( position.position, position.position + dir, nose );
+    return glm::lookAt( position.val, position.val + dir, nose );
 }
 
 glm::mat4 Camera::projection() {

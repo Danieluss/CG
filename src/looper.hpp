@@ -6,17 +6,16 @@
 #include <vector>
 #include "window.hpp"
 #include "shaders/shader.hpp"
-#include "shader.hpp"
+#include "shaders/shader.hpp"
 #include "texture.hpp"
-#include "directionalLight.hpp"
+#include "directional_light.hpp"
 
 namespace pr {
 
     class Looper {
 
         Window& window;
-        Shader& shader;
-        Camera camera;
+        Camera mainCamera;
         double recentTime = 0;
         double updateTime;
         Shader shader;
@@ -32,18 +31,20 @@ namespace pr {
         void swap();
 
         void drawCube(Shader &shader, glm::mat4);
+
         void renderScene(Shader &shader);
+
+        void initListeners();
+
+        void initScene();
 
     public:
 
         Looper( Window& window);
 
-        ~Looper();
+        virtual ~Looper();
 
         void loop();
-
-        void init();
-
     };
 
 }

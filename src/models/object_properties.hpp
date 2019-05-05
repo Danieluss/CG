@@ -9,7 +9,7 @@ struct Transformable {
 
 struct Positionable : virtual public Transformable {
 
-    glm::vec3 position{0, 0, 0};
+    glm::vec3 val{0, 0, 0};
 
     operator glm::vec3();
 
