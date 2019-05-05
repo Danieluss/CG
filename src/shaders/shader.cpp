@@ -1,10 +1,14 @@
 #include"shader.hpp"
-#include<iostream>
+#include<string>
 
 namespace pr {
     Shader::Shader(const char *vertexShader, const char *fragmentShader) {
-        sp=new ShaderProgram(vertexShader,NULL,fragmentShader); //path relative to executable
-        id = sp->getShaderId();
+        std::string pathToShaders = "src/shaders/glsl/";
+        std::string vs, fs;
+        vs = pathToShaders + std::string(vertexShader);
+        fs = pathToShaders + std::string(fragmentShader);
+        sp=new ShaderProgram(vs.c_str(),NULL,fs.c_str()); //path relative to executable
+        shaderId = sp->getShaderId();
     }
     Shader::~Shader() {
         delete sp;
