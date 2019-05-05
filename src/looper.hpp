@@ -3,8 +3,12 @@
 
 #include <iostream>
 #include <models/camera.hpp>
+#include <vector>
 #include "window.hpp"
 #include "shaders/shader.hpp"
+#include "shader.hpp"
+#include "texture.hpp"
+#include "directionalLight.hpp"
 
 namespace pr {
 
@@ -15,6 +19,11 @@ namespace pr {
         Camera camera;
         double recentTime = 0;
         double updateTime;
+        Shader shader;
+        Shader shadowShader;
+        std::vector<Texture> textures;
+        std::vector<DirectionalLight> directionalLights;
+        unsigned int depthMapFrameBuffer;
 
         void processInput();
 
@@ -22,15 +31,14 @@ namespace pr {
 
         void swap();
 
+        void drawCube(Shader &shader, glm::mat4);
+        void renderScene(Shader &shader);
+
     public:
 
-        Looper( Window& window, Shader &shader ) : window( window ), shader( shader ) {
-            init();
-        }
+        Looper( Window& window);
 
-        Looper( Window&& window, Shader &shader ) : window( window ), shader( shader ) {
-            init();
-        }
+        ~Looper();
 
         void loop();
 

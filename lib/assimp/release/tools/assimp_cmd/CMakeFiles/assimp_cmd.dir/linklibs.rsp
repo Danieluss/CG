@@ -1,1 +1,0 @@
- -LE:/Burdel/Download/assimp-4.1.0/release  -LE:/Burdel/Download/assimp-4.1.0/release/lib "C:/Program Files/Assimp/libassimp.dll.a" "C:/Program Files/Assimp/libzlibstatic.a" "C:/Program Files/Assimp/libIrrXML.a" -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

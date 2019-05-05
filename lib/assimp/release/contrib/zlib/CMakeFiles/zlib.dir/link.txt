@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E remove -f CMakeFiles\zlib.dir/objects.a
-E:\Burdel\Download\mingwx86_64posixseh\bin\ar.exe cr CMakeFiles\zlib.dir/objects.a @CMakeFiles\zlib.dir\objects1.rsp
-E:\Burdel\Download\mingwx86_64posixseh\bin\gcc.exe   -fPIC  -shared -o "C:\Program Files\Assimp\libzlib.dll" -Wl,--out-implib,"C:\Program Files\Assimp\libzlib.dll.a" -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\zlib.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\zlib.dir\linklibs.rsp

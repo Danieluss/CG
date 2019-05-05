@@ -2,8 +2,8 @@
 #include<iostream>
 
 namespace pr {
-    Shader::Shader() {
-        sp=new ShaderProgram("res/shaders/v_test.glsl",NULL,"res/shaders/f_test.glsl"); //path relative to executable
+    Shader::Shader(const char *vertexShader, const char *fragmentShader) {
+        sp=new ShaderProgram(vertexShader,NULL,fragmentShader); //path relative to executable
         shaderId = sp->getShaderId();
     }
     Shader::~Shader() {
@@ -23,6 +23,9 @@ namespace pr {
     }
     void Shader::setUniform(const char *name, int &value) {
         glUniform1i(u(name), value);
+    }
+    void Shader::setUniform(const char *name, unsigned int &value) {
+        glUniform1ui(u(name), value);
     }
     void Shader::setUniform(const char *name, float &value) {
         glUniform1f(u(name), value);

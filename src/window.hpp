@@ -21,6 +21,9 @@ namespace pr {
 
         static void init();
 
+        unsigned int width;
+        unsigned int height;
+
         Window( int width = DEF_WIDTH,
                 int height = DEF_HEIGHT,
                 const char *name = DEF_NAME,
@@ -31,6 +34,7 @@ namespace pr {
         Window( const char* name ) : Window( DEF_WIDTH, DEF_HEIGHT, name, DEF_CONTEXT ){}
 
         Window( bool makeContext ) : Window( DEF_WIDTH, DEF_HEIGHT, DEF_NAME, makeContext ){}
+
 
         operator GLFWwindow*() const {
             return gwindow;

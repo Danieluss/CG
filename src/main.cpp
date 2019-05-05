@@ -5,9 +5,9 @@
 #include <assimp/Importer.hpp>
 #include "window.hpp"
 #include "looper.hpp"
-#include "event_handling/input_triggers.hpp"
-#include "event_handling/listener_manager.hpp"
-#include "shaders/shader.hpp"
+#include "input_triggers.hpp"
+#include "listener_manager.hpp"
+#include "shader.hpp"
 
 void _deb( std::ostream &out, std::string &line_separator, std::string &separator ) {
     out<<line_separator;
@@ -51,13 +51,24 @@ int main() {
             fprintf(stderr, "Can't initialize GLEW: %s\n", glewGetErrorString(err));
             exit(EXIT_FAILURE);
         }
-        Shader test;
-        Looper looper(window, test);
+        Looper looper(window);
+        ListenerManager::instance().addButtonObs(
+                ButtonObserver()
+                    .callback( [](int key, int action, int mods)->void{ std::cout<<action<<std::endl;} )
+                    .trigger( build< ButtonTrigger >()
+                            .key( GLFW_KEY_UP )
+                            .action( GLFW_PRESS )
+                            .get() ) );
+        ListenerManager::instance().hook( window );
         while(!glfwWindowShouldClose(window)) {
             looper.loop();
         }
-    } catch( std::exception& ex ) {
-        deb( ex.what() );
+    } catch(std::string &ex) {
+        deb(ex);
+    } catch(std::exception &ex) {
+        deb(ex.what());
+    } catch( ... ) {
+        deb("Unexpected exception");
     }
     glfwTerminate();
 

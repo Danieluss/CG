@@ -15,11 +15,12 @@ namespace pr {
             void enableAttribs(std::vector<const char *> &attributes);
             void disableAttribs(std::vector<const char *> &attributes);
         public:
-            Shader();
+            Shader(const char *vertexShader, const char *fragmentShader);
             ~Shader();
             void use();
             void setUniform(const char *name, bool &value);
             void setUniform(const char *name, int &value);
+            void setUniform(const char *name, unsigned int &value);
             void setUniform(const char *name, float &value);
             void setUniform(const char *name, glm::vec3 &value);
             void setUniform(const char *name, glm::vec4 &value);

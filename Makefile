@@ -1,8 +1,8 @@
 CC = g++
-LIBS=-lGL -lglfw -lGLEW
-CFLAGS = -g -std=c++11 -O3 -I include -I lib/glm -I lib/assimp/include
+LIBS=-lGL -lglfw -lGLEW -lassimp
+CFLAGS = -g -std=c++11 -O3 -I include -I lib/glm
 
-SRCS=main.cpp observer.cpp window.cpp looper.cpp shader.cpp shaderprogram.cpp
+SRCS=main.cpp observer.cpp window.cpp looper.cpp shader.cpp shaderprogram.cpp texture.cpp directionalLight.cpp
 OBJS = $(addprefix obj/,$(SRCS:.cpp=.o))
 
 all: $(OBJS)

@@ -1,2 +1,0 @@
-E:\Burdel\Download\mingwx86_64posixseh\bin\ar.exe qc "C:\Program Files\Assimp\libIrrXML.a"  CMakeFiles/IrrXML.dir/irrXML.cpp.obj
-E:\Burdel\Download\mingwx86_64posixseh\bin\ranlib.exe "C:\Program Files\Assimp\libIrrXML.a"
