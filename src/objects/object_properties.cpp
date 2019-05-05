@@ -1,5 +1,5 @@
 #include <glm/gtc/matrix_transform.hpp>
-#include "models/object_properties.hpp"
+#include "objects/object_properties.hpp"
 #include "object_properties.hpp"
 
 

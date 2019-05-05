@@ -8,7 +8,7 @@
 #include "shaders/shader.hpp"
 #include "shaders/shader.hpp"
 #include "texture.hpp"
-#include "directional_light.hpp"
+#include "objects/directional_light.hpp"
 
 namespace pr {
 
