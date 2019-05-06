@@ -76,6 +76,14 @@ namespace pr {
 
     void Looper::processInput() {
         double deltaTime = updateTime - recentTime;
+        frameCount++;
+        framesTime += deltaTime;
+        if( framesTime >= fpsRefresh ) {
+            std::cout<<"\rFPS: "<<frameCount/framesTime;
+            fflush( stdout );
+            framesTime = 0;
+            frameCount = 0;
+        }
         glfwPollEvents();
         if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
             mainCamera.moveFront( deltaTime );
@@ -120,16 +128,16 @@ namespace pr {
     }
 
     void Looper::initListeners() {
-        ListenerManager.addMouseMotionObs( MotionObserver( [ this ]( glm::vec2 pos ) -> void {
+        ListenerManager.onMouseMotion( MotionObserver( [ this ]( glm::vec2 pos ) -> void {
             mainCamera.turn( pos );
         } ));
-        ListenerManager.addMouseScrollObs( MotionObserver( [ this ]( glm::vec2 scroll ) -> void {
+        ListenerManager.onMouseScroll( MotionObserver( [ this ]( glm::vec2 scroll ) -> void {
             mainCamera.zoom( scroll[1] );
         } ));
-        ListenerManager.addMappedButtonObs( GLFW_KEY_ESCAPE, ButtonObserver( [ this ]( int, int, int ) -> void {
+        ListenerManager.onButton( GLFW_KEY_ESCAPE, ButtonObserver( [ this ]( int, int, int ) -> void {
             glfwSetWindowShouldClose( this->window, true );
         } ));
-        ListenerManager.addMappedButtonObs(
+        ListenerManager.onButton(
                 GLFW_KEY_E,
                 ButtonObserver(
                         build< ButtonTrigger >().action( GLFW_PRESS ).get(),
@@ -137,7 +145,7 @@ namespace pr {
                             mainCamera.accelerate( 4.f/3.f );
                         }
                 ));
-        ListenerManager.addMappedButtonObs(
+        ListenerManager.onButton(
                 GLFW_KEY_Q,
                 ButtonObserver(
                         build< ButtonTrigger >().action( GLFW_PRESS ).get(),
@@ -150,8 +158,8 @@ namespace pr {
     void Looper::initScene() {
         mainCamera.position.val = glm::vec3(-5,-5,3);
         glGenFramebuffers( 1, &depthMapFrameBuffer );
-        textures.push_back( Texture( "bricks.png", 1024, 1024, 3 ));
-        textures.push_back( Texture( "metal.png", 512, 512, 3 ));
+        textures.push_back( Texture( "bricks.png" ));
+        textures.push_back( Texture( "metal.png" ));
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),

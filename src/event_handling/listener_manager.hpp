@@ -154,26 +154,26 @@ namespace pr {
             scrollObservers.erase( scrollObservers.find( observer ));
         }
 
-        void addMappedButtonObs( int key, ButtonObserver observer ) {
+        void onButton( int key, ButtonObserver observer ) {
             if( buttonObserverMap.find( key ) == buttonObserverMap.end()) {
                 buttonObserverMap.insert( std::make_pair( key, std::unordered_set< ButtonObserver >()));
             }
             buttonObserverMap[key].insert( observer );
         }
 
-        void addButtonObs( ButtonObserver observer ) {
+        void onButton( ButtonObserver observer ) {
             buttonObservers.insert( observer );
         }
 
-        void addMouseScrollObs( MotionObserver observer ) {
+        void onMouseScroll( MotionObserver observer ) {
             scrollObservers.insert( observer );
         }
 
-        void addMouseMotionObs( MotionObserver observer ) {
+        void onMouseMotion( MotionObserver observer ) {
             motionObservers.insert( observer );
         }
 
-        void addMousePositionObs( MotionObserver observer ) {
+        void onMousePosition( MotionObserver observer ) {
             mousePositionObservers.insert( observer );
         }
 

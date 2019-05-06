@@ -1,5 +1,7 @@
 #include "mesh.hpp"
 
+#define ENUM_STRINGS
+
 pr::Mesh::Mesh( const std::vector< unsigned int > &indices,
                 const std::vector< pr::Vertex > &vertices,
                 const std::vector< pr::Texture > &textures )
@@ -42,7 +44,6 @@ void pr::Mesh::draw( pr::Shader shader ) {
         glActiveTexture( GL_TEXTURE0 + i );
         std::string number;
         TexType type = textures[i].type;
-//        std::string name = std::string( strTexType( type ) ); //sic!
         std::string name;
         if( type == DIFFUSE ) {
             name = "diffuse";
@@ -53,17 +54,22 @@ void pr::Mesh::draw( pr::Shader shader ) {
         } else if( type == NORMAL ) {
             name = "normal";
             number = std::to_string( normalId++ );
-        } else if( type == HEIGHT ) {
-            name = "height";
+        } else if( type == AMBIENT ) {
+            name = "ambient";
             number = std::to_string( heightId++ );
         }
 
         glUniform1i( glGetUniformLocation( shader.getId(), ( name + number ).c_str() ), i );
         glBindTexture( GL_TEXTURE_2D, textures[i].id );
     }
-
     glBindVertexArray( VAO );
     glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0 );
     glBindVertexArray( 0 );
     glActiveTexture( GL_TEXTURE0 );
 }
+
+pr::Mesh::Mesh() {
+
+}
+
+#undef ENUM_STRINGS

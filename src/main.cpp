@@ -45,7 +45,6 @@ int main() {
         Window::init();
         Window window;
         GLenum err;
-        Assimp::Importer importer;
         ListenerManager.hook( window );
         if(( err = glewInit()) != GLEW_OK ) { //Initialize GLEW library
             fprintf(stderr, "Can't initialize GLEW: %s\n", glewGetErrorString( err ));

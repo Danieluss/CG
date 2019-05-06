@@ -22,6 +22,8 @@ namespace pr {
         std::vector< Texture > textures;
         unsigned VAO;
 
+        Mesh();
+
         Mesh( const std::vector< unsigned int > &indices, const std::vector< Vertex > &vertices,
               const std::vector< Texture > &textures );
 

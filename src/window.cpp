@@ -14,8 +14,8 @@ namespace pr {
         __init = glfwInit();
     }
 
-    Window::Window( int width,
-                    int height,
+    Window::Window( unsigned width,
+                    unsigned height,
                     const char *name,
                     bool makeContext ) : width( width ), height( height ) {
         gwindow = glfwCreateWindow( width, height, name, NULL, NULL );

@@ -14,8 +14,11 @@ namespace pr {
 
     class Looper {
 
+        static constexpr double fpsRefresh = 2.;
         Window& window;
         Camera mainCamera;
+        int frameCount = 0;
+        double framesTime = 0;
         double recentTime = 0;
         double updateTime;
         Shader shader;

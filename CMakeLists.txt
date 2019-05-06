@@ -36,6 +36,6 @@ link_libraries(${GLEW_LIBRARIES})
 include_directories(${OPENGL_INCLUDE_DIRS})
 link_libraries(${OPENGL_LIBRARIES})
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/objects/modeling/vertex.hpp src/objects/modeling/mesh.cpp src/objects/modeling/mesh.hpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_link_libraries(CG -L -lglew32s -lglfw3dll)

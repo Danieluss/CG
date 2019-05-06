@@ -24,8 +24,8 @@ namespace pr {
         unsigned int width;
         unsigned int height;
 
-        Window( int width = DEF_WIDTH,
-                int height = DEF_HEIGHT,
+        Window( unsigned width = DEF_WIDTH,
+                unsigned height = DEF_HEIGHT,
                 const char *name = DEF_NAME,
                 bool makeContext = true );
 
