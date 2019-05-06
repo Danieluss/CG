@@ -16,14 +16,14 @@
 namespace pr {
 
     template< class T, class U >
-    void xyzcp( T &t, const U &u ) {
+    void xyzcp( T &t, U &u ) {
         t.x = u.x;
         t.y = u.y;
         t.z = u.z;
     }
 
     template< class T, class U >
-    void xycp( T &t, const U &u ) {
+    void xycp( T &t, U &u ) {
         t.x = u.x;
         t.y = u.y;
     }
@@ -34,6 +34,8 @@ namespace pr {
         std::vector< Mesh > meshes;
 
         Model( const std::string &filename );
+
+        Model();
 
         void draw( const Shader &shader );
 

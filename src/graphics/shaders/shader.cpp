@@ -3,7 +3,7 @@
 
 namespace pr {
     Shader::Shader( const char *vertexShader, const char *fragmentShader ) {
-        std::string pathToShaders = "src/shaders/glsl/";
+        std::string pathToShaders = "src/graphics/shaders/glsl/";
         std::string vs, fs;
         vs = pathToShaders + std::string( vertexShader );
         fs = pathToShaders + std::string( fragmentShader );

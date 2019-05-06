@@ -2,14 +2,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <event_handling/listener_manager.hpp>
-#include <event_handling/observer.hpp>
+#include "event_handling/listener_manager.hpp"
+#include "event_handling/observer.hpp"
 #include "looper.hpp"
 
-#include "objects/myCube.h"
+#include "graphics/modeling/myCube.h"
 #include "looper.hpp"
 
 #include<iostream>
+#include "entities/basic_entities.hpp"
 
 using namespace std;
 
@@ -40,16 +41,20 @@ namespace pr {
         glm::mat4 M1;
 
         M1 = glm::translate( M, glm::vec3( 0, 0, 2 ));
-        textures[0].activate( 0 );
+        textures["bricks"].activate( 0 );
         drawCube( shader, M1 );
 
         M1 = glm::translate( M, glm::vec3( -3, 3, 5 ));
-        textures[0].activate( 0 );
+        textures["bricks"].activate( 0 );
         drawCube( shader, M1 );
 
         M1 = glm::scale( M, glm::vec3( 10.0f, 10.0f, 0.2f ));
-        textures[1].activate( 0 );
+        textures["metal"].activate( 0 );
         drawCube( shader, M1 );
+
+        for( auto entity : entities ) {
+            entity.draw( shader );
+        }
     }
 
     Looper::Looper( Window &window ) : window( window ),
@@ -61,8 +66,8 @@ namespace pr {
     }
 
     Looper::~Looper() {
-        for( Texture t : textures ) {
-            t.deleteTexture();
+        for( auto pair : textures ) {
+            pair.second.deleteTexture();
         }
     }
 
@@ -142,15 +147,16 @@ namespace pr {
                 ButtonObserver(
                         build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                         [ this ]( int, int, int ) -> void {
-                            mainCamera.accelerate( 4.f/3.f );
+                            mainCamera.accelerate( 1.25f );
                         }
                 ));
         ListenerManager.onButton(
                 GLFW_KEY_Q,
                 ButtonObserver(
+//                        build< ButtonTrigger >().actions( { GLFW_PRESS, GLFW_REPEAT } ).get(),
                         build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                         [ this ]( int, int, int ) -> void {
-                            mainCamera.accelerate( 0.75f );
+                            mainCamera.accelerate( 0.8f );
                         }
                 ));
     }
@@ -158,8 +164,10 @@ namespace pr {
     void Looper::initScene() {
         mainCamera.position.val = glm::vec3(-5,-5,3);
         glGenFramebuffers( 1, &depthMapFrameBuffer );
-        textures.push_back( Texture( "bricks.png" ));
-        textures.push_back( Texture( "metal.png" ));
+        textures["bricks"] = Texture( "bricks.png" );
+        textures["metal"] = Texture( "metal.png" );
+        models["chalice"] = Model( "chalice.obj" );
+        entities.push_back( Entity( models[ "chalice" ] ) );
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),

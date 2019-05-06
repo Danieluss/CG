@@ -7,7 +7,7 @@
 #include "looper.hpp"
 #include "event_handling/input_triggers.hpp"
 #include "event_handling/listener_manager.hpp"
-#include "shaders/shader.hpp"
+#include "graphics/shaders/shader.hpp"
 
 void _deb( std::ostream &out, std::string &line_separator, std::string &separator ) {
     out<<line_separator;
@@ -51,6 +51,7 @@ int main() {
             exit( EXIT_FAILURE );
         }
         Looper looper( window );
+        fflush( stdout );
         while( !glfwWindowShouldClose( window )) {
             looper.loop();
         }

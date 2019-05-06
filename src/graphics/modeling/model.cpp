@@ -1,4 +1,7 @@
 #include "model.hpp"
+#include "texture.hpp"
+
+std::unordered_map< std::string, pr::Texture > pr::Model::texturesLoaded = std::unordered_map< std::string, pr::Texture >();
 
 pr::Model::Model( const std::string &filename ) {
     Assimp::Importer importer;
@@ -36,10 +39,15 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
     Mesh mesh;
     for( int i = 0; i < aMesh->mNumVertices; i++ ) {
         Vertex vertex;
+        vertex.position.x = aMesh->mVertices[i].x;
         xyzcp( vertex.position, aMesh->mVertices[i] );
-        xyzcp( vertex.normal, aMesh->mNormals[i] );
-        xyzcp( vertex.tangent, aMesh->mTangents[i] );
-        xyzcp( vertex.bitangent, aMesh->mBitangents[i] );
+        if( aMesh->HasNormals() ) {
+            xyzcp( vertex.normal, aMesh->mNormals[i] );
+        }
+        if( aMesh->HasTangentsAndBitangents() ) {
+            xyzcp( vertex.tangent, aMesh->mTangents[i] );
+            xyzcp( vertex.bitangent, aMesh->mBitangents[i] );
+        }
         if( aMesh->mTextureCoords[0] )
             xycp( vertex.uv, aMesh->mTextureCoords[0][i] );
         mesh.vertices.push_back( vertex );
@@ -65,7 +73,7 @@ pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureTy
         material->GetTexture( type, i, &string );
         std::string filename = std::string( string.C_Str() );
         if( texturesLoaded.find( filename ) == texturesLoaded.end() ) {
-            Texture texture( "res/textures/" + std::string( string.C_Str() ) );
+            Texture texture( filename );
             texturesLoaded[ filename ] = texture;
             texture.type = texType;
             mesh.textures.push_back( texture );
@@ -73,4 +81,8 @@ pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureTy
             mesh.textures.push_back( texturesLoaded[ filename ] );
         }
     }
+}
+
+pr::Model::Model() {
+
 }
