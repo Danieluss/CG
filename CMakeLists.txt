@@ -36,6 +36,6 @@ link_libraries(${GLEW_LIBRARIES})
 include_directories(${OPENGL_INCLUDE_DIRS})
 link_libraries(${OPENGL_LIBRARIES})
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/entities/basic_entities.cpp src/entities/basic_entities.hpp)
 
 target_link_libraries(CG -L -lglew32s -lglfw3dll)

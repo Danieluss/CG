@@ -9,13 +9,13 @@ namespace pr {
         virtual void transform( glm::mat4 &matrix ) = 0;
     };
 
-    struct Positionable : virtual public Transformable {
+    struct Positionable : public Transformable {
 
         glm::vec3 val{0, 0, 0};
 
         operator glm::vec3();
 
-        void transform( glm::mat4 &matrix ) override;
+        void transform( glm::mat4 &matrix );
 
         virtual void translate( const glm::vec3 &offset );
 
@@ -27,7 +27,7 @@ namespace pr {
         X, Y, Z
     };
 
-    struct Rotatable : virtual public Transformable {
+    struct Rotatable : public Transformable {
 
         glm::mat4 rotation;
 
@@ -35,13 +35,15 @@ namespace pr {
 
         void transform( glm::mat4 &matrix ) override;
 
+        glm::vec3 eulerAngles();
+
         virtual void rotate( const double &angleD, glm::vec3 axis );
 
         virtual void rotate( const double &angleD, const Axis &axis );
 
     };
 
-    struct Scalable : virtual public Transformable {
+    struct Scalable : public Transformable {
 
         glm::vec3 scale_{1, 1, 1};
 

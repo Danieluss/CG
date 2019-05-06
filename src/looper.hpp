@@ -2,20 +2,23 @@
 #define CG_LOOPER_HPP
 
 #include <iostream>
-#include "objects/camera.hpp"
+#include "entities/camera.hpp"
 #include <vector>
+#include "entities/basic_entities.hpp"
+#include "graphics/modeling/model.hpp"
 #include "window.hpp"
-#include "shaders/shader.hpp"
-#include "shaders/shader.hpp"
-#include "objects/modeling/texture.hpp"
-#include "objects/directional_light.hpp"
+#include "graphics/shaders/shader.hpp"
+#include "graphics/shaders/shader.hpp"
+#include "graphics/modeling/texture.hpp"
+#include "entities/camera.hpp"
+#include "graphics/directional_light.hpp"
 
 namespace pr {
 
     class Looper {
 
         static constexpr double fpsRefresh = 2.;
-        Window& window;
+        Window &window;
         Camera mainCamera;
         int frameCount = 0;
         double framesTime = 0;
@@ -23,8 +26,10 @@ namespace pr {
         double updateTime;
         Shader shader;
         Shader shadowShader;
-        std::vector<Texture> textures;
-        std::vector<DirectionalLight> directionalLights;
+        std::unordered_map< std::string, Model > models;
+        std::vector< Entity > entities;
+        std::unordered_map< std::string, Texture > textures;
+        std::vector< DirectionalLight > directionalLights;
         unsigned int depthMapFrameBuffer;
 
         void processInput();
@@ -33,9 +38,9 @@ namespace pr {
 
         void swap();
 
-        void drawCube(Shader &shader, glm::mat4);
+        void drawCube( Shader &shader, glm::mat4 );
 
-        void renderScene(Shader &shader);
+        void renderScene( Shader &shader );
 
         void initListeners();
 
@@ -43,7 +48,7 @@ namespace pr {
 
     public:
 
-        Looper( Window& window);
+        Looper( Window &window );
 
         virtual ~Looper();
 

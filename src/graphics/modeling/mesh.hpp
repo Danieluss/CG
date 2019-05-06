@@ -3,7 +3,7 @@
 #define offset( structure, member ) ((size_t)((char *)&((structure *)0)->member - (char *)0))
 
 #include <vector>
-#include <shaders/shader.hpp>
+#include "graphics/shaders/shader.hpp"
 #include "vertex.hpp"
 #include "texture.hpp"
 

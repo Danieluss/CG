@@ -1,5 +1,4 @@
 #include <glm/gtc/matrix_transform.hpp>
-#include "objects/object_properties.hpp"
 #include "object_properties.hpp"
 
 namespace pr {
@@ -42,6 +41,29 @@ namespace pr {
 
     Rotatable::operator glm::mat4() {
         return rotation;
+    }
+
+    glm::vec3 Rotatable::eulerAngles() {
+
+        float sy = sqrt(rotation[0][0] * rotation[0][0] + rotation[1][0] * rotation[1][0] );
+
+        bool singular = sy < 1e-6; // If
+
+        float x, y, z;
+        if (!singular)
+        {
+            x = atan2(rotation[2][1] , rotation[2][2]);
+            y = atan2(-rotation[2][0], sy);
+            z = atan2(rotation[1][0], rotation[0][0]);
+        }
+        else
+        {
+            x = atan2(-rotation[1][2], rotation[1][1]);
+            y = atan2(-rotation[2][0], sy);
+            z = 0;
+        }
+        return glm::vec3(x, y, z);
+
     }
 
     void Scalable::scale( const double &x, const double &y, const double &z ) {
