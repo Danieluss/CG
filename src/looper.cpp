@@ -2,15 +2,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "event_handling/listener_manager.hpp"
-#include "event_handling/observer.hpp"
+#include <event_handling/listener_manager.hpp>
+#include <event_handling/observer.hpp>
 #include "looper.hpp"
 
 #include "graphics/modeling/myCube.h"
 #include "looper.hpp"
 
 #include<iostream>
-#include "entities/basic_entities.hpp"
 
 using namespace std;
 
