@@ -19,7 +19,7 @@ namespace pr {
 
         operator glm::vec3();
 
-        glm::mat4 transform( glm::mat4 matrix );
+        void transform( glm::mat4 &matrix ) override;
 
         virtual void translate( const glm::vec3 &offset );
 
