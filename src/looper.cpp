@@ -6,7 +6,7 @@
 #include <event_handling/observer.hpp>
 #include "looper.hpp"
 
-#include "objects/myCube.h"
+#include "graphics/modeling/myCube.h"
 #include "looper.hpp"
 
 #include<iostream>
