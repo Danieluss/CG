@@ -5,6 +5,10 @@
 
 namespace pr {
 
+    enum MoveDir {
+        FORWARD, BACKWARD, UP, DOWN, LEFT, RIGHT
+    };
+
     struct Transformable {
 
 //        virtual glm::mat4 transform( glm::mat4& matrix ) {
@@ -19,7 +23,7 @@ namespace pr {
 
         operator glm::vec3();
 
-        glm::mat4 transform( glm::mat4 matrix );
+        glm::mat4 transform( glm::mat4 matrix ) const;
 
         virtual void translate( const glm::vec3 &offset );
 
@@ -37,7 +41,7 @@ namespace pr {
 
         operator glm::mat4();
 
-        glm::mat4 transform( glm::mat4 matrix );
+        glm::mat4 transform( glm::mat4 matrix ) const;
 
         glm::vec3 eulerAngles();
 
@@ -53,7 +57,7 @@ namespace pr {
 
         operator glm::vec3();
 
-        glm::mat4 transform( glm::mat4 matrix );
+        glm::mat4 transform( glm::mat4 matrix ) const;
 
         virtual void scale( const glm::vec3 &scale );
 

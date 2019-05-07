@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 namespace std {
 
@@ -51,9 +52,9 @@ namespace pr {
         std::unordered_set< MotionObserver > mousePositionObservers;
         std::unordered_set< MotionObserver > scrollObservers;
         std::unordered_set< ButtonObserver > buttonObservers;
-        Window* window = nullptr;
+        Window *window = nullptr;
         double lastX = -1, lastY = -1;
-        bool lockCursor = true;
+        bool cursorLocked = true;
 
         void _keyNotify( int key, int action, int mods, std::unordered_set< ButtonObserver > &observers ) {
             for( auto it = observers.begin(); it != observers.end(); it++ ) {
@@ -69,12 +70,17 @@ namespace pr {
 
         void operator=( const ListenerManager & ) = delete;
 
-        bool isLockCursor() const {
-            return lockCursor;
+        bool isCursorLocked() const {
+            return cursorLocked;
         }
 
-        void setLockCursor( bool lockCursor ) {
-            ListenerManager::lockCursor = lockCursor;
+        void lockCursor( bool lockCursor ) {
+            ListenerManager::cursorLocked = lockCursor;
+            if( lockCursor ) {
+                glfwSetInputMode( window->gwindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN );
+            } else {
+                glfwSetInputMode( window->gwindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+            }
         }
 
         static ListenerManager &instance() {
@@ -99,7 +105,7 @@ namespace pr {
                 }
             }
 
-            if( lockCursor ) {
+            if( cursorLocked ) {
                 lastX = window->size().x/2;
                 lastY = window->size().y/2;
                 glfwSetCursorPos( *window, window->size().x/2, window->size().y/2 );
@@ -131,8 +137,16 @@ namespace pr {
             instance().scrollNotify( x, y );
         }
 
-        void hook( Window& window ) {
+        static void refreshWindow( GLFWwindow *window, int width, int height ) {
+            height = 9./16.*width;
+            instance().window->width = width;
+            instance().window->height = height;
+            glfwSetWindowSize( window, width, height );
+        }
+
+        void hook( Window &window ) {
             this->window = &window;
+            glfwSetFramebufferSizeCallback( window, ListenerManager::refreshWindow );
             glfwSetKeyCallback( window, ListenerManager::keyNotify );
             glfwSetMouseButtonCallback( window, ListenerManager::mouseKeyNotify );
             glfwSetCursorPosCallback( window, ListenerManager::mousePositionNotify );

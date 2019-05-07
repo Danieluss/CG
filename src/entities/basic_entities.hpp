@@ -9,14 +9,19 @@ namespace pr {
     class Entity : public Positionable, public Rotatable, public Scalable {
 
         Model &model;
+        const Entity* parent;
 
     public:
 
         Entity( Model &model );
 
-        Model& getModel();
+        void setParent( const Entity& entity );
 
-        void draw( Shader &shader );
+        glm::mat4 modelMatrix() const;
+
+        Model& getModel() const;
+
+        void draw( Shader &shader ) const;
     };
 
 }

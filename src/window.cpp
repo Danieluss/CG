@@ -29,7 +29,6 @@ namespace pr {
         glEnable( GL_DEPTH_TEST );
         glfwSetInputMode( gwindow, GLFW_STICKY_KEYS, GLFW_TRUE );
         glfwSetInputMode( gwindow, GLFW_LOCK_KEY_MODS, GLFW_TRUE );
-        glfwSetInputMode( gwindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN );
     }
 
     glm::vec2 Window::size() {

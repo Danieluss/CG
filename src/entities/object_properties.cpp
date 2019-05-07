@@ -15,7 +15,7 @@ namespace pr {
         return val;
     }
 
-    glm::mat4 Positionable::transform( glm::mat4 matrix ) {
+    glm::mat4 Positionable::transform( glm::mat4 matrix ) const {
         return glm::translate( matrix, val );
     }
 
@@ -35,7 +35,7 @@ namespace pr {
         rotation = glm::rotate( rotation, static_cast<float>( angleD*M_PI/180.0 ), axis );
     }
 
-    glm::mat4 Rotatable::transform( glm::mat4 matrix ) {
+    glm::mat4 Rotatable::transform( glm::mat4 matrix ) const {
         return rotation*matrix;
     }
 
@@ -74,7 +74,7 @@ namespace pr {
         scale_ = scale_*scale;
     }
 
-    glm::mat4 Scalable::transform( glm::mat4 matrix ) {
+    glm::mat4 Scalable::transform( glm::mat4 matrix ) const {
         return glm::scale( matrix, scale_ );
     }
 

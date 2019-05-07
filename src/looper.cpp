@@ -90,17 +90,17 @@ namespace pr {
         }
         glfwPollEvents();
         if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
-            mainCamera.moveFront( deltaTime );
+            mainCamera.move( deltaTime, FORWARD );
         if( glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS )
-            mainCamera.moveBack( deltaTime );
+            mainCamera.move( deltaTime, BACKWARD );
         if( glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS )
-            mainCamera.moveLeft( deltaTime );
+            mainCamera.move( deltaTime, LEFT );
         if( glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS )
-            mainCamera.moveRight( deltaTime );
+            mainCamera.move( deltaTime, RIGHT );
         if( glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS )
-            mainCamera.moveUp( deltaTime );
+            mainCamera.move( deltaTime, UP );
         if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS )
-            mainCamera.moveDown( deltaTime );
+            mainCamera.move( deltaTime, DOWN );
     }
 
     void Looper::render() {
@@ -114,7 +114,7 @@ namespace pr {
         glViewport( 0, 0, window.width, window.height );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         glm::mat4 V = mainCamera.view();
-        glm::mat4 P = mainCamera.projection();
+        glm::mat4 P = mainCamera.projection( ( (float) window.width )/window.height );
         shader.use();
         shader.setUniform( "P", P );
         shader.setUniform( "V", V );
@@ -132,6 +132,7 @@ namespace pr {
     }
 
     void Looper::initListeners() {
+        ListenerManager.lockCursor( true );
         ListenerManager.onMouseMotion( MotionObserver( [ this ]( glm::vec2 pos ) -> void {
             mainCamera.turn( pos );
         } ));
@@ -141,6 +142,12 @@ namespace pr {
         ListenerManager.onButton( GLFW_KEY_ESCAPE, ButtonObserver( [ this ]( int, int, int ) -> void {
             glfwSetWindowShouldClose( this->window, true );
         } ));
+        ListenerManager.onButton( GLFW_KEY_TAB, ButtonObserver(
+                build< ButtonTrigger >().action( GLFW_PRESS ).get(),
+                [ this ]( int, int, int ) -> void {
+                    ListenerManager.lockCursor( !ListenerManager.isCursorLocked() );
+                    mainCamera.locked = !ListenerManager.isCursorLocked();
+                } ));
         ListenerManager.onButton(
                 GLFW_KEY_E,
                 ButtonObserver(

@@ -35,37 +35,53 @@ void pr::Mesh::init() {
     glBindVertexArray( 0 );
 }
 
-void pr::Mesh::draw( pr::Shader shader ) {
-    unsigned diffuseId = 0;
-    unsigned specularId = 0;
-    unsigned normalId = 0;
-    unsigned heightId = 0;
-    for( unsigned int i = 0; i < textures.size(); i++ ) {
-        glActiveTexture( GL_TEXTURE0 + i );
-        std::string number;
-        TexType type = textures[i].type;
-        std::string name;
-        if( type == DIFFUSE ) {
-            name = "diffuse";
-            number = std::to_string( diffuseId++ );
-        } else if( type == SPECULAR ) {
-            name = "specular";
-            number = std::to_string( specularId++ );
-        } else if( type == NORMAL ) {
-            name = "normal";
-            number = std::to_string( normalId++ );
-        } else if( type == AMBIENT ) {
-            name = "ambient";
-            number = std::to_string( heightId++ );
-        }
+void pr::Mesh::draw( pr::Shader& shader ) {
+    //TODO
+//    unsigned diffuseId = 0;
+//    unsigned specularId = 0;
+//    unsigned normalId = 0;
+//    unsigned heightId = 0;
+//    for( unsigned int i = 0; i < textures.size(); i++ ) {
+//        glActiveTexture( GL_TEXTURE0 + i );
+//        std::string number;
+//        TexType type = textures[i].type;
+//        std::string name;
+//        if( type == DIFFUSE ) {
+//            name = "diffuse";
+//            number = std::to_string( diffuseId++ );
+//        } else if( type == SPECULAR ) {
+//            name = "specular";
+//            number = std::to_string( specularId++ );
+//        } else if( type == NORMAL ) {
+//            name = "normal";
+//            number = std::to_string( normalId++ );
+//        } else if( type == AMBIENT ) {
+//            name = "ambient";
+//            number = std::to_string( heightId++ );
+//        }
+//
+//        glUniform1i( glGetUniformLocation( shader.getId(), ( name + number ).c_str() ), i );
+//        glBindTexture( GL_TEXTURE_2D, textures[i].id );
+//    }
+//    glBindVertexArray( VAO );
+//    glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0 );
+//    glBindVertexArray( 0 );
+//    glActiveTexture( GL_TEXTURE0 );
 
-        glUniform1i( glGetUniformLocation( shader.getId(), ( name + number ).c_str() ), i );
-        glBindTexture( GL_TEXTURE_2D, textures[i].id );
-    }
-    glBindVertexArray( VAO );
-    glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0 );
-    glBindVertexArray( 0 );
-    glActiveTexture( GL_TEXTURE0 );
+
+//    TODO
+//    shader.setUniform( "material.ambient", x );
+//    shader.setUniform( "material.diffuse", x );
+//    glm::vec3 spec = glm::vec3( 1.0, 1.0, 1.0 );
+//    shader.setUniform( "material.specular", spec );
+//    float shi = 100.0;
+//    shader.setUniform( "material.shininess", shi );
+//    shader.setAttrib( "iPos", 4, myCubeVertices );
+//    shader.setAttrib( "iTexCoord", 2, myCubeTexCoords );
+//    shader.setAttrib( "iNormal", 4, myCubeNormals );
+//    glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
+//    shader.setUniform( "normalMatrix", normalMatrix );
+//    shader.draw( {"iPos", "iTexCoord", "iNormal"}, GL_TRIANGLES, myCubeVertexCount );
 }
 
 pr::Mesh::Mesh() {

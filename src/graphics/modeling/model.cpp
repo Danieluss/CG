@@ -14,7 +14,7 @@ pr::Model::Model( const std::string &filename ) {
     scene = nullptr;
 }
 
-void pr::Model::draw( const pr::Shader &shader ) {
+void pr::Model::draw( pr::Shader &shader ) {
     for( int i = 0; i < meshes.size(); i++ ) {
         meshes[i].draw( shader );
     }
@@ -59,6 +59,14 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
         }
     }
     aiMaterial *material = scene->mMaterials[aMesh->mMaterialIndex];
+    aiColor4D tmp;
+    aiGetMaterialFloat( material, AI_MATKEY_SHININESS, &mesh.shininess );
+    aiGetMaterialColor( material, AI_MATKEY_COLOR_AMBIENT, &tmp );
+    rgbcp( mesh.ambient, tmp );
+    aiGetMaterialColor( material, AI_MATKEY_COLOR_SPECULAR, &tmp );
+    rgbcp( mesh.specular, tmp );
+    aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &tmp );
+    rgbcp( mesh.diffuse, tmp );
     loadTextures( mesh, material, aiTextureType_DIFFUSE, DIFFUSE );
     loadTextures( mesh, material, aiTextureType_SPECULAR, SPECULAR );
     loadTextures( mesh, material, aiTextureType_HEIGHT, NORMAL );

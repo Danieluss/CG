@@ -16,6 +16,13 @@
 namespace pr {
 
     template< class T, class U >
+    void rgbcp( T &t, U &u ) {
+        t.x = u.r;
+        t.y = u.g;
+        t.z = u.b;
+    }
+
+    template< class T, class U >
     void xyzcp( T &t, U &u ) {
         t.x = u.x;
         t.y = u.y;
@@ -37,7 +44,7 @@ namespace pr {
 
         Model();
 
-        void draw( const Shader &shader );
+        void draw( Shader &shader );
 
         static Model fromFile( const std::string &filename );
 
