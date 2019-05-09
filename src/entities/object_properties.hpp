@@ -9,6 +9,12 @@ namespace pr {
         FORWARD, BACKWARD, UP, DOWN, LEFT, RIGHT
     };
 
+    struct Parentable {
+
+        virtual glm::mat4 modelMatrix() const = 0;
+
+    };
+
     struct Transformable {
 
 //        virtual glm::mat4 transform( glm::mat4& matrix ) {
@@ -37,7 +43,7 @@ namespace pr {
 
     struct Rotatable : public Transformable {
 
-        glm::mat4 rotation;
+        glm::mat4 rotation = glm::mat4( 1.0 );
 
         operator glm::mat4();
 

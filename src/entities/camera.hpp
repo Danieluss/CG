@@ -6,7 +6,7 @@
 
 namespace pr {
 
-    struct Camera {
+    struct Camera : public Parentable {
 
         MinMaxProperty< float > speed{1.f/128.f, 128.f, 2.f};
         MinMaxProperty< float > mouseSensitivity{1.f/128.f, 128.f, 0.25f};
@@ -26,7 +26,7 @@ namespace pr {
 
         void move( const float& time, MoveDir dir );
 
-        glm::mat4 view();
+        glm::mat4 modelMatrix() const;
 
         glm::mat4 projection( const float& ratio );
 

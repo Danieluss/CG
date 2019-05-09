@@ -52,7 +52,7 @@ namespace pr {
         drawCube( shader, M1 );
 
         for( auto entity : entities ) {
-            entity.draw( shader );
+//            entity.draw( shader );
         }
     }
 
@@ -113,7 +113,7 @@ namespace pr {
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
         glViewport( 0, 0, window.width, window.height );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-        glm::mat4 V = mainCamera.view();
+        glm::mat4 V = mainCamera.modelMatrix();
         glm::mat4 P = mainCamera.projection( ( (float) window.width )/window.height );
         shader.use();
         shader.setUniform( "P", P );

@@ -81,5 +81,4 @@ namespace pr {
     Scalable::operator glm::vec3() {
         return scale_;
     }
-
 }

@@ -46,7 +46,7 @@ namespace pr {
         position.translate(( -time*speed )*nose );
     }
 
-    glm::mat4 Camera::view() {
+    glm::mat4 Camera::modelMatrix() const {
         return glm::lookAt( position.val, position.val + dir, nose );
     }
 
