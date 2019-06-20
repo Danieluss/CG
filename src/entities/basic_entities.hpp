@@ -21,7 +21,7 @@ namespace pr {
 
         Model& getModel() const;
 
-        void draw( Shader &shader ) const;
+        void draw( Shader &shader, glm::mat4 M) const;
     };
 
 }

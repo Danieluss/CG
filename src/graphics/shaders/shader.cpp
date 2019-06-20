@@ -61,6 +61,7 @@ namespace pr {
 
     void Shader::setAttrib( const char *name, int numberOfValues, float *array ) {
         glVertexAttribPointer( a( name ), numberOfValues, GL_FLOAT, false, 0, array );
+        attributes.push_back(name);
     }
 
     void Shader::enableAttribs( std::vector< const char * > &attributes ) {
@@ -76,13 +77,13 @@ namespace pr {
         attributes.clear();
     }
 
-    void Shader::draw( std::vector< const char * > attributes, GLenum mode, int size ) {
+    void Shader::draw( GLenum mode, int size ) {
         enableAttribs( attributes );
         glDrawArrays( mode, 0, size );
         disableAttribs( attributes );
     }
 
-    void Shader::draw( std::vector< const char * > attributes, GLenum mode, int size, unsigned int *indices ) {
+    void Shader::draw( GLenum mode, int size, unsigned int *indices ) {
         enableAttribs( attributes );
         glDrawElements( mode, size, GL_UNSIGNED_INT, indices );
         disableAttribs( attributes );

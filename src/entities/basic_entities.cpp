@@ -16,10 +16,8 @@ glm::mat4 pr::Entity::modelMatrix() const {
     return Scalable::transform( Rotatable::transform( Positionable::transform( M ) ) );
 }
 
-void pr::Entity::draw( pr::Shader &shader ) const {
-    glm::mat4 M = modelMatrix();
-    shader.setUniform( "M", M );
-    model.draw( shader );
+void pr::Entity::draw( pr::Shader &shader, glm::mat4 M) const {
+    model.draw( shader, M);
 }
 
 void pr::Entity::setParent( const pr::Parentable &entity ) {

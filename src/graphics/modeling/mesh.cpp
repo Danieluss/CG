@@ -1,11 +1,27 @@
 #include "mesh.hpp"
 
+#include<iostream>
+using namespace std;
 #define ENUM_STRINGS
 
 pr::Mesh::Mesh( const std::vector< unsigned int > &indices,
                 const std::vector< pr::Vertex > &vertices,
                 const std::vector< pr::Texture > &textures )
         : indices( indices ), vertices( vertices ), textures( textures ) {
+}
+
+void pr::Mesh::updateArrays() {
+    positions.clear();
+    normals.clear();
+    texcoords.clear();
+    for(Vertex &v : vertices) {
+        for(int i=0; i < 3; i++) {
+            positions.push_back(v.position[i]);
+            normals.push_back(v.normal[i]);
+        }
+        texcoords.push_back(v.uv[0]);
+        texcoords.push_back(1.0-v.uv[1]);
+    }
 }
 
 void pr::Mesh::draw( pr::Shader &shader ) {
@@ -31,6 +47,7 @@ void pr::Mesh::draw( pr::Shader &shader ) {
         } else if( type == NORMAL ) {
             name = "normal";
             number = std::to_string( normalId++ );
+            continue;
         } else if( type == AMBIENT ) {
             name = "ambient";
             number = std::to_string( heightId++ );
@@ -39,25 +56,13 @@ void pr::Mesh::draw( pr::Shader &shader ) {
         shader.setUniform(("material."+name).c_str(), i);
         shader.setUniform(("material.v"+name).c_str(), empty);
     }
-    std::vector<float> pos, tex, norm;
-    for(Vertex &v : vertices) {
-        for(int i=0; i < 3; i++) {
-            pos.push_back(v.position[i]);
-            norm.push_back(v.normal[i]);
-        }
-        for(int i=0; i < 2; i++) {
-            tex.push_back(v.uv[i]);
-        }
-    }
-    shader.setAttrib("iPos", 3, pos.data());
-    shader.setAttrib("iTexCoord", 2, tex.data());
-    shader.setAttrib("iNormal", 3, norm.data());
-    shader.draw( {"iPos", "iNormal", "iTexCoords"}, GL_TRIANGLES, indices.size(), indices.data());
+    shader.setAttrib("iPos", 3, positions.data());
+    shader.setAttrib("iTexCoord", 2, texcoords.data());
+    shader.setAttrib("iNormal", 3, normals.data());
+    shader.draw(GL_TRIANGLES, indices.size(), indices.data());
 }
 
 pr::Mesh::Mesh() {
-//    TODO
-//    init(); causes errors when other textures are loaded
 }
 
 #undef ENUM_STRINGS

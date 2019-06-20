@@ -7,8 +7,9 @@ using namespace std;
 std::unordered_map< std::string, pr::Texture > pr::Model::texturesLoaded = std::unordered_map< std::string, pr::Texture >();
 
 pr::Model::Model( const std::string &filename ) {
+    name = filename;
     Assimp::Importer importer;
-    scene = importer.ReadFile( "res/models/" + filename, aiProcess_Triangulate | aiProcess_CalcTangentSpace );
+    scene = importer.ReadFile( "res/models/" + filename + ".obj", aiProcess_Triangulate | aiProcess_CalcTangentSpace );
     if( !scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode ) {
         throw ( "assimp error while loading: " + filename + " description: " + importer.GetErrorString());
     }
@@ -17,9 +18,10 @@ pr::Model::Model( const std::string &filename ) {
     scene = nullptr;
 }
 
-void pr::Model::draw( pr::Shader &shader ) {
-    glm::mat4 M = glm::mat4(1.0);
-    M = translate(M, glm::vec3(0,0,10.0));
+void pr::Model::draw( pr::Shader &shader, glm::mat4 M ) {
+    M = scale(M, glm::vec3(0.1,0.1,0.1));
+    float angle = 1.57;
+    M = rotate(M, angle, glm::vec3(1,0,0));
     glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
     shader.setUniform( "M", M );
     shader.setUniform( "normalMatrix", normalMatrix );
@@ -78,24 +80,30 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
     loadTextures( mesh, material, aiTextureType_SPECULAR, SPECULAR );
     loadTextures( mesh, material, aiTextureType_HEIGHT, NORMAL );
     loadTextures( mesh, material, aiTextureType_AMBIENT, AMBIENT );
+    mesh.updateArrays();
     return mesh;
 }
 
 void
 pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureType &type, const pr::TexType &texType ) {
+    //cout << material->GetTextureCount(type) << endl;
     for( int i = 0; i < material->GetTextureCount( type ); i++ ) {
         aiString string;
         material->GetTexture( type, i, &string );
         std::string filename = std::string( string.C_Str() );
         if( texturesLoaded.find( filename ) == texturesLoaded.end() ) {
-            Texture texture( filename );
+            //cout << filename << endl;
+            Texture texture( name + "/" + filename );
             texturesLoaded[ filename ] = texture;
             texture.type = texType;
             mesh.textures.push_back( texture );
         } else {
-            mesh.textures.push_back( texturesLoaded[ filename ] );
+            Texture texture = texturesLoaded[filename];
+            texture.type = texType;
+            mesh.textures.push_back(texture);
         }
     }
+    //cout << endl;
 }
 
 pr::Model::Model() {

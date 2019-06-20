@@ -32,7 +32,7 @@ namespace pr {
         glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
         shader.setUniform( "M", M );
         shader.setUniform( "normalMatrix", normalMatrix );
-        shader.draw( {"iPos", "iTexCoord", "iNormal"}, GL_TRIANGLES, myCubeVertexCount );
+        shader.draw(GL_TRIANGLES, myCubeVertexCount );
     }
 
     void Looper::renderScene( Shader &shader ) {
@@ -54,8 +54,10 @@ namespace pr {
         textures["metal"].activate( 0 );
         drawCube( shader, M1 );
 
+        M1 = glm::translate(M, glm::vec3(2.0f, 0, 2.0f));
+
         for( auto entity : entities ) {
-            entity.draw( shader );
+            entity.draw( shader, M1 );
         }
     }
 
@@ -175,8 +177,10 @@ namespace pr {
         glGenFramebuffers( 1, &depthMapFrameBuffer );
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
-        models["chalice"] = Model( "chalice.obj" );
-        entities.push_back( Entity( models[ "chalice" ] ) );
+        models["ufo"] = Model( "Low_poly_UFO" );
+        entities.push_back( Entity( models["ufo"] ) );
+        // models["building"] = Model( "Apartment Building_17_obj" );
+        // entities.push_back( Entity( models["building"]));
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
