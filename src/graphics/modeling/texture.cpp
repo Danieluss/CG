@@ -11,6 +11,7 @@
 namespace pr {
 
     Texture::Texture( std::string filename ) {
+        std::cout<<filename<<std::endl;
         filename = "res/textures/" + filename;
         glGenTextures( 1, &id );
         glBindTexture( GL_TEXTURE_2D, id );

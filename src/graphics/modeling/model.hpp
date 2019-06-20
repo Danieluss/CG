@@ -44,7 +44,7 @@ namespace pr {
 
         Model();
 
-        void draw( Shader &shader, glm::mat4 M);
+        void draw( Shader &shader );
 
         static Model fromFile( const std::string &filename );
 

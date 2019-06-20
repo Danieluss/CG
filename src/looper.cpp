@@ -17,9 +17,9 @@ namespace pr {
 
     void Looper::drawCube( Shader &shader, glm::mat4 M ) {
         int x = 0;
-        glm::vec3 empty = glm::vec3(-1,-1,-1);
-        shader.setUniform("material.vambient", empty);
-        shader.setUniform("material.vdiffuse", empty);
+        glm::vec3 empty = glm::vec3( -1, -1, -1 );
+        shader.setUniform( "material.vambient", empty );
+        shader.setUniform( "material.vdiffuse", empty );
         shader.setUniform( "material.ambient", x );
         shader.setUniform( "material.diffuse", x );
         glm::vec3 spec = glm::vec3( 1.0, 1.0, 1.0 );
@@ -32,7 +32,7 @@ namespace pr {
         glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
         shader.setUniform( "M", M );
         shader.setUniform( "normalMatrix", normalMatrix );
-        shader.draw(GL_TRIANGLES, myCubeVertexCount );
+        shader.draw( GL_TRIANGLES, myCubeVertexCount );
     }
 
     void Looper::renderScene( Shader &shader ) {
@@ -99,7 +99,7 @@ namespace pr {
         framesTime += deltaTime;
         if( framesTime >= fpsRefresh ) {
             std::cout<<"\rFPS: "<<frameCount/framesTime;
-            fflush( stdout );
+            fflush(stdout);
             framesTime = 0;
             frameCount = 0;
         }
@@ -143,8 +143,10 @@ namespace pr {
     }
 
     void Looper::updateScene() {
-        entities[0].pos = { 0, 0, 5 + sin( updateTime*2 ) };
+        entities[0].pos = {0, 0, 7 + sin( updateTime )};
         entities[0].rotateD( deltaTime*100, Z );
+        entities[2].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
+        entities[2].rotateD( deltaTime*200, Z );
     }
 
     void Looper::swap() {
@@ -165,7 +167,7 @@ namespace pr {
         ListenerManager.onButton( GLFW_KEY_TAB, ButtonObserver(
                 build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                 [ this ]( int, int, int ) -> void {
-                    ListenerManager.lockCursor( !ListenerManager.isCursorLocked() );
+                    ListenerManager.lockCursor( !ListenerManager.isCursorLocked());
                     mainCamera.locked = !ListenerManager.isCursorLocked();
                 } ));
         ListenerManager.onButton(
@@ -193,17 +195,20 @@ namespace pr {
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
         models["ufo"] = Model( "Low_poly_UFO" );
-        entities.push_back( Entity( models["ufo"] ) );
-        // models["building"] = Model( "Apartment Building_17_obj" );
-        // entities.push_back( Entity( models["building"]));
-        models["chalice"] = Model( "chalice.obj" );
-        models["eight"] = Model( "eight.obj" );
+//         models["building"] = Model( "Apartment Building_17_obj" );
+//         entities.push_back( Entity( models["building"]));
+        models["chalice"] = Model( "chalice" );
+        models["eight"] = Model( "eight" );
         entities.push_back( Entity( models["chalice"] ));
         entities.push_back( Entity( models["eight"] ));
-        entities[0].translate( {0, 0, 5} );
+        entities[0].translate( {0, 0, 6} );
         entities[0].rotateD( 60, X );
         entities[1].translate( {-11, 0, 1} );
         entities[1].rotateD( 90, X );
+        //TODO entities - iterable collection, map by some id
+        entities.push_back( Entity( models["ufo"] ));
+        entities[2].rotateD( 90, X );
+        entities[2].scale( {0.1, 0.1, 0.1} );
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),

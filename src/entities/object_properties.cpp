@@ -18,13 +18,8 @@ namespace pr {
     }
 
     void Rotatable::rotate( const float &angle, const Axis &ax ) {
-        if( ax == X ) {
-            rot[0] += angle;
-        } else if( ax == Y ) {
-            rot[1] += angle;
-        } else if( ax == Z ) {
-            rot[2] += angle;
-        }
+        rot[ax] += angle;
+        rot[ax] -= 2 * M_PI * ( (int) ( rot[ax] / M_PI / 2 ) );
     }
 
     glm::mat4 Rotatable::transform( glm::mat4 matrix ) const {
@@ -41,7 +36,7 @@ namespace pr {
     }
 
     void Scalable::scale( const glm::vec3 &scale ) {
-        scale_ = scale_*scale;
+        scale_ = scale_ * scale;
     }
 
     glm::mat4 Scalable::transform( glm::mat4 matrix ) const {
