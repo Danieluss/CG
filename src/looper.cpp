@@ -39,13 +39,23 @@ namespace pr {
         shader.setUniform( "M", M );
         glm::mat4 M1;
 
-        M1 = glm::translate( M, glm::vec3( 0, 0, 2 ));
+        M1 = glm::translate( M, glm::vec3( 0, 0, 0 ));
+        M1 = glm::rotate( M1, static_cast<float>( -30/180.f*M_PI ), glm::vec3( 0, 1, 0 ) );
         textures["bricks"].activate( 0 );
         drawCube( shader, M1 );
 
-        M1 = glm::translate( M, glm::vec3( -3, 3, 5 ));
-        textures["bricks"].activate( 0 );
-        drawCube( shader, M1 );
+        for( int i = 0; i < 10; i++ ) {
+            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
+            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
+            M1 = tr*rot*M1;
+        }
+        for( int i = 0; i < 10; i++ ) {
+            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
+            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
+            M1 = inverse( tr * rot ) * M1;
+            textures["bricks"].activate( 0 );
+            drawCube( shader, M1 );
+        }
 
         M1 = glm::scale( M, glm::vec3( 10.0f, 10.0f, 0.2f ));
         textures["metal"].activate( 0 );
