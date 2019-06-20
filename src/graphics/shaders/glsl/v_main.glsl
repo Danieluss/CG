@@ -17,8 +17,8 @@ struct DirectionalLight {
 uniform int numberOfDirectionalLights;
 uniform DirectionalLight directionalLights[4];
 
-in vec4 iPos;
-in vec4 iNormal;
+in vec3 iPos;
+in vec3 iNormal;
 in vec2 iTexCoord;
 
 out vec3 pos;
@@ -28,8 +28,8 @@ out vec4 posForDirectionalLight[4];
 
 void main(void) {
     texCoord = iTexCoord;
-    normal = normalMatrix*iNormal.xyz;
-    vec4 p = M*iPos;
+    normal = normalMatrix*iNormal;
+    vec4 p = M*vec4(iPos.xyz, 1.0);
     pos = p.xyz;
     gl_Position = P*V*p;
     for(int i=0; i < numberOfDirectionalLights; i++) {

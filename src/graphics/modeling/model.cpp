@@ -1,6 +1,9 @@
 #include "model.hpp"
 #include "texture.hpp"
 
+#include<iostream>
+using namespace std;
+
 std::unordered_map< std::string, pr::Texture > pr::Model::texturesLoaded = std::unordered_map< std::string, pr::Texture >();
 
 pr::Model::Model( const std::string &filename ) {
@@ -15,6 +18,11 @@ pr::Model::Model( const std::string &filename ) {
 }
 
 void pr::Model::draw( pr::Shader &shader ) {
+    glm::mat4 M = glm::mat4(1.0);
+    M = translate(M, glm::vec3(0,0,10.0));
+    glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
+    shader.setUniform( "M", M );
+    shader.setUniform( "normalMatrix", normalMatrix );
     for( int i = 0; i < meshes.size(); i++ ) {
         meshes[i].draw( shader );
     }
@@ -39,7 +47,6 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
     Mesh mesh;
     for( int i = 0; i < aMesh->mNumVertices; i++ ) {
         Vertex vertex;
-        vertex.position.x = aMesh->mVertices[i].x;
         xyzcp( vertex.position, aMesh->mVertices[i] );
         if( aMesh->HasNormals() ) {
             xyzcp( vertex.normal, aMesh->mNormals[i] );

@@ -17,15 +17,18 @@ namespace pr {
 
     void Looper::drawCube( Shader &shader, glm::mat4 M ) {
         int x = 0;
+        glm::vec3 empty = glm::vec3(-1,-1,-1);
+        shader.setUniform("material.vambient", empty);
+        shader.setUniform("material.vdiffuse", empty);
         shader.setUniform( "material.ambient", x );
         shader.setUniform( "material.diffuse", x );
         glm::vec3 spec = glm::vec3( 1.0, 1.0, 1.0 );
-        shader.setUniform( "material.specular", spec );
+        shader.setUniform( "material.vspecular", spec );
         float shi = 100.0;
         shader.setUniform( "material.shininess", shi );
-        shader.setAttrib( "iPos", 4, myCubeVertices );
+        shader.setAttrib( "iPos", 3, myCubeVertices );
         shader.setAttrib( "iTexCoord", 2, myCubeTexCoords );
-        shader.setAttrib( "iNormal", 4, myCubeNormals );
+        shader.setAttrib( "iNormal", 3, myCubeVertexNormals );
         glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
         shader.setUniform( "M", M );
         shader.setUniform( "normalMatrix", normalMatrix );
@@ -52,7 +55,7 @@ namespace pr {
         drawCube( shader, M1 );
 
         for( auto entity : entities ) {
-//            entity.draw( shader );
+            entity.draw( shader );
         }
     }
 

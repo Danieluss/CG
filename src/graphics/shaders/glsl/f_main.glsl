@@ -3,7 +3,10 @@
 struct Material {
     sampler2D ambient;
     sampler2D diffuse;
-    vec3 specular;
+    sampler2D specular;
+    vec3 vambient;
+    vec3 vdiffuse;
+    vec3 vspecular;
     float shininess;
 };
 
@@ -62,13 +65,27 @@ vec3 getDirectionalLight(DirectionalLight lightSource, vec3 ka, vec3 kd, vec3 ks
 }
 
 void main(void) {
-    vec3 ka=texture(material.ambient, texCoord).xyz;
-    vec3 kd=texture(material.diffuse, texCoord).xyz;
+    vec3 ka, kd, ks;
+    if(material.vambient.x < 0) {
+        ka = texture(material.ambient, texCoord).xyz;
+    } else {
+        ka = material.vambient;
+    }
+    if(material.vdiffuse.x < 0) {
+        kd = texture(material.diffuse, texCoord).xyz;
+    } else {
+        kd = material.vdiffuse;
+    }
+    if(material.vspecular.x < 0) {
+        ks = texture(material.specular, texCoord).xyz;
+    } else {
+        ks = material.vspecular;
+    }
     vec3 norm = normalize(normal);
     vec3 viewerVector = normalize(cameraLocation-pos);
     vec3 col = vec3(0,0,0);
     for(int i=0; i < numberOfDirectionalLights; i++) {
-        col+=getDirectionalLight(directionalLights[i], ka, kd, material.specular, material.shininess, norm, viewerVector, posForDirectionalLight[i]);
+        col+=getDirectionalLight(directionalLights[i], ka, kd, ks, material.shininess, norm, viewerVector, posForDirectionalLight[i]);
     }
     pixelColor=vec4(col, 1.0);
 }
