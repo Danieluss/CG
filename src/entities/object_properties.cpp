@@ -1,69 +1,39 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "object_properties.hpp"
 
 namespace pr {
 
     void Positionable::translate( const glm::vec3 &offset ) {
-        val += offset;
+        pos += offset;
     }
 
     void Positionable::translate( const double &x, const double &y, const double &z ) {
-        val += glm::vec3{x, y, z};
-    }
-
-    Positionable::operator glm::vec3() {
-        return val;
+        pos += glm::vec3{x, y, z};
     }
 
     glm::mat4 Positionable::transform( glm::mat4 matrix ) const {
-        return glm::translate( matrix, val );
+        return glm::translate( matrix, pos );
     }
 
-    void Rotatable::rotate( const double &angleD, const Axis &ax ) {
-        glm::vec3 axis;
+    void Rotatable::rotate( const float &angle, const Axis &ax ) {
         if( ax == X ) {
-            axis = {1, 0, 0};
+            rot[0] += angle;
         } else if( ax == Y ) {
-            axis = {0, 1, 0};
+            rot[1] += angle;
         } else if( ax == Z ) {
-            axis = {0, 0, 1};
+            rot[2] += angle;
         }
-        rotate( angleD, axis );
-    }
-
-    void Rotatable::rotate( const double &angleD, glm::vec3 axis ) {
-        rotation = glm::rotate( rotation, static_cast<float>( angleD*M_PI/180.0 ), axis );
     }
 
     glm::mat4 Rotatable::transform( glm::mat4 matrix ) const {
-        return rotation*matrix;
+        glm::quat q = glm::quat( rot );
+        return matrix*glm::mat4_cast( q );
     }
 
-    Rotatable::operator glm::mat4() {
-        return rotation;
-    }
-
-    glm::vec3 Rotatable::eulerAngles() {
-
-        float sy = sqrt(rotation[0][0] * rotation[0][0] + rotation[1][0] * rotation[1][0] );
-
-        bool singular = sy < 1e-6; // If
-
-        float x, y, z;
-        if (!singular)
-        {
-            x = atan2(rotation[2][1] , rotation[2][2]);
-            y = atan2(-rotation[2][0], sy);
-            z = atan2(rotation[1][0], rotation[0][0]);
-        }
-        else
-        {
-            x = atan2(-rotation[1][2], rotation[1][1]);
-            y = atan2(-rotation[2][0], sy);
-            z = 0;
-        }
-        return glm::vec3(x, y, z);
-
+    void Rotatable::rotateD( const float &angleD, const Axis& axis ) {
+        rotate( angleD * M_PI / 180.0, axis );
     }
 
     void Scalable::scale( const double &x, const double &y, const double &z ) {
@@ -76,9 +46,5 @@ namespace pr {
 
     glm::mat4 Scalable::transform( glm::mat4 matrix ) const {
         return glm::scale( matrix, scale_ );
-    }
-
-    Scalable::operator glm::vec3() {
-        return scale_;
     }
 }

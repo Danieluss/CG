@@ -25,9 +25,7 @@ namespace pr {
 
     struct Positionable : public Transformable {
 
-        glm::vec3 val{0, 0, 0};
-
-        operator glm::vec3();
+        glm::vec3 pos{0, 0, 0};
 
         glm::mat4 transform( glm::mat4 matrix ) const;
 
@@ -43,25 +41,19 @@ namespace pr {
 
     struct Rotatable : public Transformable {
 
-        glm::mat4 rotation = glm::mat4( 1.0 );
-
-        operator glm::mat4();
+        glm::vec3 rot = {0, 0, 0};
 
         glm::mat4 transform( glm::mat4 matrix ) const;
 
-        glm::vec3 eulerAngles();
+        virtual void rotate( const float &angle, const Axis &axis );
 
-        virtual void rotate( const double &angleD, glm::vec3 axis );
-
-        virtual void rotate( const double &angleD, const Axis &axis );
+        virtual void rotateD( const float &angleD, const Axis& axis );
 
     };
 
     struct Scalable : public Transformable {
 
         glm::vec3 scale_{1, 1, 1};
-
-        operator glm::vec3();
 
         glm::mat4 transform( glm::mat4 matrix ) const;
 

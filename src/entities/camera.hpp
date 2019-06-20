@@ -8,7 +8,7 @@ namespace pr {
 
     struct Camera : public Parentable {
 
-        MinMaxProperty< float > speed{1.f/128.f, 128.f, 2.f};
+        MinMaxProperty< float > speed{1.f/128.f, 128.f, 4.f};
         MinMaxProperty< float > mouseSensitivity{1.f/128.f, 128.f, 0.25f};
         MinMaxProperty< float > zoom_{1.f/32.f, 1.f, 1.f};
 

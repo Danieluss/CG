@@ -47,7 +47,7 @@ namespace pr {
     }
 
     glm::mat4 Camera::modelMatrix() const {
-        return glm::lookAt( position.val, position.val + dir, nose );
+        return glm::lookAt( position.pos, position.pos + dir, nose );
     }
 
     glm::mat4 Camera::projection( const float& ratio ) {

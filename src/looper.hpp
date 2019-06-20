@@ -21,9 +21,10 @@ namespace pr {
         Window &window;
         Camera mainCamera;
         int frameCount = 0;
+        double deltaTime = 0;
         double framesTime = 0;
         double recentTime = 0;
-        double updateTime;
+        double updateTime = 0;
         Shader shader;
         Shader shadowShader;
         std::unordered_map< std::string, Model > models;
@@ -39,6 +40,8 @@ namespace pr {
         void swap();
 
         void drawCube( Shader &shader, glm::mat4 );
+
+        void updateScene();
 
         void renderScene( Shader &shader );
 

@@ -17,9 +17,9 @@ namespace pr {
 
     void Looper::drawCube( Shader &shader, glm::mat4 M ) {
         int x = 0;
-        glm::vec3 empty = glm::vec3(-1,-1,-1);
-        shader.setUniform("material.vambient", empty);
-        shader.setUniform("material.vdiffuse", empty);
+        glm::vec3 empty = glm::vec3( -1, -1, -1 );
+        shader.setUniform( "material.vambient", empty );
+        shader.setUniform( "material.vdiffuse", empty );
         shader.setUniform( "material.ambient", x );
         shader.setUniform( "material.diffuse", x );
         glm::vec3 spec = glm::vec3( 1.0, 1.0, 1.0 );
@@ -37,29 +37,29 @@ namespace pr {
 
     void Looper::renderScene( Shader &shader ) {
         glm::mat4 M = glm::mat4( 1.0 );
-        float angle = 0.0*M_PI/180.0;
-        M = glm::rotate( M, angle, glm::vec3( 1, 0, 0 ));
-        shader.setUniform( "M", M );
+//        float angle = 0.0*M_PI/180.0;
+//        M = glm::rotate( M, angle, glm::vec3( 1, 0, 0 ));
+//        shader.setUniform( "M", M );
         glm::mat4 M1;
-
-        M1 = glm::translate( M, glm::vec3( 0, 0, 0 ));
-        M1 = glm::rotate( M1, static_cast<float>( -30/180.f*M_PI ), glm::vec3( 0, 1, 0 ) );
-        textures["bricks"].activate( 0 );
-        drawCube( shader, M1 );
-
-        for( int i = 0; i < 10; i++ ) {
-            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
-            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
-            M1 = tr*rot*M1;
-        }
-        for( int i = 0; i < 10; i++ ) {
-            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
-            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
-            M1 = inverse( tr * rot ) * M1;
-            textures["bricks"].activate( 0 );
-            drawCube( shader, M1 );
-        }
-
+//
+//        M1 = glm::translate( M, glm::vec3( 0, 0, 0 ));
+//        M1 = glm::rotate( M1, static_cast<float>( -30/180.f*M_PI ), glm::vec3( 0, 1, 0 ) );
+//        textures["bricks"].activate( 0 );
+//        drawCube( shader, M1 );
+//
+//        for( int i = 0; i < 10; i++ ) {
+//            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
+//            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
+//            M1 = tr*rot*M1;
+//        }
+//        for( int i = 0; i < 10; i++ ) {
+//            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
+//            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
+//            M1 = inverse( tr * rot ) * M1;
+//            textures["bricks"].activate( 0 );
+//            drawCube( shader, M1 );
+//        }
+//
         M1 = glm::scale( M, glm::vec3( 10.0f, 10.0f, 0.2f ));
         textures["metal"].activate( 0 );
         drawCube( shader, M1 );
@@ -85,19 +85,20 @@ namespace pr {
 
     void Looper::loop() {
         updateTime = glfwGetTime();
+        deltaTime = updateTime - recentTime;
         processInput();
+        updateScene();
         render();
         swap();
         recentTime = updateTime;
     }
 
     void Looper::processInput() {
-        double deltaTime = updateTime - recentTime;
         frameCount++;
         framesTime += deltaTime;
         if( framesTime >= fpsRefresh ) {
             std::cout<<"\rFPS: "<<frameCount/framesTime;
-            fflush( stdout );
+            fflush(stdout);
             framesTime = 0;
             frameCount = 0;
         }
@@ -120,24 +121,29 @@ namespace pr {
         int numberOfDirectionalLights = min(( int ) directionalLights.size(), 4 );
 
         for( int i = 0; i < numberOfDirectionalLights; i++ ) {
-            directionalLights[i].generateShadows( shadowShader, depthMapFrameBuffer, mainCamera.position.val );
+            directionalLights[i].generateShadows( shadowShader, depthMapFrameBuffer, mainCamera.position.pos );
             renderScene( shadowShader );
         }
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
         glViewport( 0, 0, window.width, window.height );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         glm::mat4 V = mainCamera.modelMatrix();
-        glm::mat4 P = mainCamera.projection( ( (float) window.width )/window.height );
+        glm::mat4 P = mainCamera.projection((( float ) window.width )/window.height );
         shader.use();
         shader.setUniform( "P", P );
         shader.setUniform( "V", V );
-        shader.setUniform( "cameraLocation", mainCamera.position.val );
+        shader.setUniform( "cameraLocation", mainCamera.position.pos );
 
         shader.setUniform( "numberOfDirectionalLights", numberOfDirectionalLights );
         for( int i = 0; i < directionalLights.size(); i++ ) {
             directionalLights[i].addToScene( shader, i );
         }
         renderScene( shader );
+    }
+
+    void Looper::updateScene() {
+        entities[0].pos = { 0, 0, 5 + sin( updateTime*2 ) };
+        entities[0].rotateD( deltaTime*100, Z );
     }
 
     void Looper::swap() {
@@ -158,7 +164,7 @@ namespace pr {
         ListenerManager.onButton( GLFW_KEY_TAB, ButtonObserver(
                 build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                 [ this ]( int, int, int ) -> void {
-                    ListenerManager.lockCursor( !ListenerManager.isCursorLocked() );
+                    ListenerManager.lockCursor( !ListenerManager.isCursorLocked());
                     mainCamera.locked = !ListenerManager.isCursorLocked();
                 } ));
         ListenerManager.onButton(
@@ -181,12 +187,18 @@ namespace pr {
     }
 
     void Looper::initScene() {
-        mainCamera.position.val = glm::vec3(-5,-5,3);
+        mainCamera.position.pos = glm::vec3( -5, -5, 3 );
         glGenFramebuffers( 1, &depthMapFrameBuffer );
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
         models["chalice"] = Model( "chalice.obj" );
-        entities.push_back( Entity( models[ "chalice" ] ) );
+        models["eight"] = Model( "eight.obj" );
+        entities.push_back( Entity( models["chalice"] ));
+        entities.push_back( Entity( models["eight"] ));
+        entities[0].translate( {0, 0, 5} );
+        entities[0].rotateD( 60, X );
+        entities[1].translate( {-11, 0, 1} );
+        entities[1].rotateD( 90, X );
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),

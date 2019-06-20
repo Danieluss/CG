@@ -18,11 +18,6 @@ pr::Model::Model( const std::string &filename ) {
 }
 
 void pr::Model::draw( pr::Shader &shader ) {
-    glm::mat4 M = glm::mat4(1.0);
-    M = translate(M, glm::vec3(0,0,10.0));
-    glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
-    shader.setUniform( "M", M );
-    shader.setUniform( "normalMatrix", normalMatrix );
     for( int i = 0; i < meshes.size(); i++ ) {
         meshes[i].draw( shader );
     }
