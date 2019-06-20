@@ -11,10 +11,6 @@ namespace pr {
 
     class Mesh {
 
-        unsigned VBO, EBO;
-
-        void init();
-
     public:
 
         std::vector< unsigned > indices;
@@ -23,8 +19,6 @@ namespace pr {
 
         glm::vec3 specular, ambient, diffuse;
         float shininess;
-
-        unsigned VAO;
 
         Mesh();
 

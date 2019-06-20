@@ -21,7 +21,7 @@ namespace pr {
         gwindow = glfwCreateWindow( width, height, name, NULL, NULL );
         if( makeContext ) {
             glfwMakeContextCurrent( gwindow );
-            glfwFocusWindow( gwindow );
+            //glfwFocusWindow( gwindow );
         }
         if( __init == -1 || !gwindow )
             throw ( "bad init" );

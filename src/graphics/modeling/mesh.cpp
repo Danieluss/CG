@@ -6,33 +6,6 @@ pr::Mesh::Mesh( const std::vector< unsigned int > &indices,
                 const std::vector< pr::Vertex > &vertices,
                 const std::vector< pr::Texture > &textures )
         : indices( indices ), vertices( vertices ), textures( textures ) {
-    init();
-}
-
-void pr::Mesh::init() {
-    glGenVertexArrays( 1, &VAO );
-    glGenBuffers( 1, &VBO );
-    glGenBuffers( 1, &EBO );
-
-    glBindVertexArray( VAO );
-    glBindBuffer( GL_ARRAY_BUFFER, VBO );
-    glBufferData( GL_ARRAY_BUFFER, vertices.size()*sizeof( Vertex ), &vertices[0], GL_STATIC_DRAW );
-
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, EBO );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof( unsigned int ), &indices[0], GL_STATIC_DRAW );
-
-    glEnableVertexAttribArray( 0 );
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), ( void * ) 0 );
-    glEnableVertexAttribArray( 1 );
-    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), ( void * ) offsetof( Vertex, normal ));
-    glEnableVertexAttribArray( 2 );
-    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ), ( void * ) offsetof( Vertex, uv ));
-    glEnableVertexAttribArray( 3 );
-    glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), ( void * ) offsetof( Vertex, tangent ));
-    glEnableVertexAttribArray( 4 );
-    glVertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), ( void * ) offsetof( Vertex, bitangent ));
-
-    glBindVertexArray( 0 );
 }
 
 void pr::Mesh::draw( pr::Shader &shader ) {
@@ -40,11 +13,15 @@ void pr::Mesh::draw( pr::Shader &shader ) {
     unsigned specularId = 0;
     unsigned normalId = 0;
     unsigned heightId = 0;
+    shader.setUniform("material.vambient", ambient);
+    shader.setUniform("material.vdiffuse", diffuse);
+    shader.setUniform("material.vspecular", specular);
+    shader.setUniform("material.shininess", shininess);
     for( unsigned int i = 0; i < textures.size(); i++ ) {
-        glActiveTexture( GL_TEXTURE0 + i );
         std::string number;
         TexType type = textures[i].type;
         std::string name;
+        glm::vec3 empty = glm::vec3(-1,-1,-1);
         if( type == DIFFUSE ) {
             name = "diffuse";
             number = std::to_string( diffuseId++ );
@@ -58,23 +35,24 @@ void pr::Mesh::draw( pr::Shader &shader ) {
             name = "ambient";
             number = std::to_string( heightId++ );
         }
-
-        glUniform1i( glGetUniformLocation( shader.getId(), ( name + number ).c_str()), i );
-        glBindTexture( GL_TEXTURE_2D, textures[i].id );
+        textures[i].activate(i);
+        shader.setUniform(("material."+name).c_str(), i);
+        shader.setUniform(("material.v"+name).c_str(), empty);
     }
-//    shader.setUniform( "shininess", shininess );
-
-//    void Shader::draw( std::vector< const char * > attributes, GLenum mode, int size, unsigned int *indices ) {
-//        enableAttribs( attributes );
-//        glDrawElements( mode, size, GL_UNSIGNED_INT, indices );
-//        disableAttribs( attributes );
-//    }
-
-    glBindVertexArray( VAO );
-    shader.draw( { "iPos, iNormal, iTexCoords" }, GL_TRIANGLES, indices.size(), 0 );
-//    glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0 );
-    glBindVertexArray( 0 );
-    glActiveTexture( GL_TEXTURE0 );
+    std::vector<float> pos, tex, norm;
+    for(Vertex &v : vertices) {
+        for(int i=0; i < 3; i++) {
+            pos.push_back(v.position[i]);
+            norm.push_back(v.normal[i]);
+        }
+        for(int i=0; i < 2; i++) {
+            tex.push_back(v.uv[i]);
+        }
+    }
+    shader.setAttrib("iPos", 3, pos.data());
+    shader.setAttrib("iTexCoord", 2, tex.data());
+    shader.setAttrib("iNormal", 3, norm.data());
+    shader.draw( {"iPos", "iNormal", "iTexCoords"}, GL_TRIANGLES, indices.size(), indices.data());
 }
 
 pr::Mesh::Mesh() {
