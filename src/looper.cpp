@@ -17,9 +17,9 @@ namespace pr {
 
     void Looper::drawCube( Shader &shader, glm::mat4 M ) {
         int x = 0;
-        glm::vec3 empty = glm::vec3( -1, -1, -1 );
-        shader.setUniform( "material.vambient", empty );
-        shader.setUniform( "material.vdiffuse", empty );
+        glm::vec3 empty = glm::vec3(-1,-1,-1);
+        shader.setUniform("material.vambient", empty);
+        shader.setUniform("material.vdiffuse", empty);
         shader.setUniform( "material.ambient", x );
         shader.setUniform( "material.diffuse", x );
         glm::vec3 spec = glm::vec3( 1.0, 1.0, 1.0 );
@@ -32,7 +32,7 @@ namespace pr {
         glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
         shader.setUniform( "M", M );
         shader.setUniform( "normalMatrix", normalMatrix );
-        shader.draw( {"iPos", "iTexCoord", "iNormal"}, GL_TRIANGLES, myCubeVertexCount );
+        shader.draw(GL_TRIANGLES, myCubeVertexCount );
     }
 
     void Looper::renderScene( Shader &shader ) {
@@ -94,11 +94,12 @@ namespace pr {
     }
 
     void Looper::processInput() {
+        double deltaTime = updateTime - recentTime;
         frameCount++;
         framesTime += deltaTime;
         if( framesTime >= fpsRefresh ) {
             std::cout<<"\rFPS: "<<frameCount/framesTime;
-            fflush(stdout);
+            fflush( stdout );
             framesTime = 0;
             frameCount = 0;
         }
@@ -164,7 +165,7 @@ namespace pr {
         ListenerManager.onButton( GLFW_KEY_TAB, ButtonObserver(
                 build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                 [ this ]( int, int, int ) -> void {
-                    ListenerManager.lockCursor( !ListenerManager.isCursorLocked());
+                    ListenerManager.lockCursor( !ListenerManager.isCursorLocked() );
                     mainCamera.locked = !ListenerManager.isCursorLocked();
                 } ));
         ListenerManager.onButton(
@@ -191,6 +192,10 @@ namespace pr {
         glGenFramebuffers( 1, &depthMapFrameBuffer );
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
+        models["ufo"] = Model( "Low_poly_UFO" );
+        entities.push_back( Entity( models["ufo"] ) );
+        // models["building"] = Model( "Apartment Building_17_obj" );
+        // entities.push_back( Entity( models["building"]));
         models["chalice"] = Model( "chalice.obj" );
         models["eight"] = Model( "eight.obj" );
         entities.push_back( Entity( models["chalice"] ));

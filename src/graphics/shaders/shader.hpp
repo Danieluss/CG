@@ -13,6 +13,8 @@ namespace pr {
 
         unsigned int id;
 
+        std::vector< const char * > attributes;
+
         unsigned int u( const char *name );
 
         unsigned int a( const char *name );
@@ -47,9 +49,9 @@ namespace pr {
 
         void setAttrib( const char *name, int numberOfValues, float *array );
 
-        void draw( std::vector< const char * > attributes, GLenum mode, int size );
+        void draw( GLenum mode, int size );
 
-        void draw( std::vector< const char * > attributes, GLenum mode, int size, unsigned int *indices );
+        void draw( GLenum mode, int size, unsigned int *indices );
 
         unsigned getId() {
             return id;

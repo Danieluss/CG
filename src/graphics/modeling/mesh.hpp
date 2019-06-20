@@ -17,6 +17,8 @@ namespace pr {
         std::vector< Vertex > vertices;
         std::vector< Texture > textures;
 
+        std::vector<float> positions, normals, texcoords;
+
         glm::vec3 specular, ambient, diffuse;
         float shininess;
 
@@ -24,6 +26,8 @@ namespace pr {
 
         Mesh( const std::vector< unsigned int > &indices, const std::vector< Vertex > &vertices,
               const std::vector< Texture > &textures );
+
+        void updateArrays();
 
         void draw( Shader& shader );
 
