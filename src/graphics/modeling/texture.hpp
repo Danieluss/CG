@@ -19,15 +19,20 @@ namespace pr {
 
         Texture();
 
+        static Texture cubeMap( std::string filename );
+
         Texture( std::string filename );
 
         void activate( int num );
+
+        void activateCube( int num );
 
         void deleteTexture();
 
         bool operator==( const Texture& texture );
 
     };
+
 }
 
 namespace std {

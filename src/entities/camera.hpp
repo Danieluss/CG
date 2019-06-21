@@ -14,7 +14,8 @@ namespace pr {
 
         float fov = 70;
         float minDist = 0.1;
-        float maxDist = 100;
+        float maxDist = 200;
+        float ratio = 1.77777777778;
 
         float yaw = 0;
         MinMaxProperty< float > pitch{-89.f, 89.f, 0.f};
@@ -28,7 +29,7 @@ namespace pr {
 
         glm::mat4 modelMatrix() const;
 
-        glm::mat4 projection( const float& ratio );
+        glm::mat4 projection();
 
         void zoom( const float &d );
 

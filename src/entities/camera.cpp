@@ -50,7 +50,7 @@ namespace pr {
         return glm::lookAt( position.pos, position.pos + dir, nose );
     }
 
-    glm::mat4 Camera::projection( const float& ratio ) {
+    glm::mat4 Camera::projection() {
         return glm::perspective( zoom_*glm::radians( fov ), ratio, minDist, maxDist );
     }
 

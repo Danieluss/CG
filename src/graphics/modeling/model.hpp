@@ -51,6 +51,7 @@ namespace pr {
     private:
 
         static std::unordered_map< std::string, Texture > texturesLoaded;
+
         const aiScene *scene;
 
         void dfsScene( aiNode *node );

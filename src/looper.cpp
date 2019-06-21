@@ -37,6 +37,10 @@ namespace pr {
 
     void Looper::renderScene( Shader &shader ) {
         glm::mat4 M = glm::mat4( 1.0 );
+//        M = glm::scale( M, {100, 100, 100} );
+//        shader.setUniform( "M", M );
+//        textures["sky_map"].activate( 0 );
+//        models["cube"].draw( shader );
 //        float angle = 0.0*M_PI/180.0;
 //        M = glm::rotate( M, angle, glm::vec3( 1, 0, 0 ));
 //        shader.setUniform( "M", M );
@@ -67,12 +71,15 @@ namespace pr {
         for( auto entity : entities ) {
             entity.draw( shader );
         }
+
     }
 
     Looper::Looper( Window &window ) : window( window ),
                                        shader( "v_main.glsl", "f_main.glsl" ),
                                        shadowShader( "v_shadow.glsl",
-                                                     "f_shadow.glsl" ) {
+                                                     "f_shadow.glsl" ),
+                                       skyboxShader( "v_skybox.glsl",
+                                                     "f_skybox.glsl" ) {
         initListeners();
         initScene();
     }
@@ -118,6 +125,14 @@ namespace pr {
             mainCamera.move( deltaTime, DOWN );
     }
 
+    void Looper::renderSkybox() {
+        glDepthFunc( GL_LEQUAL );
+        skyboxShader.setAttrib( "iPos", 3, myCubeVertices );
+        textures["sky_map"].activateCube( 0 );
+        skyboxShader.draw( GL_TRIANGLES, myCubeVertexCount );
+        glDepthFunc( GL_LESS );
+    }
+
     void Looper::render() {
         int numberOfDirectionalLights = min(( int ) directionalLights.size(), 4 );
 
@@ -129,7 +144,7 @@ namespace pr {
         glViewport( 0, 0, window.width, window.height );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         glm::mat4 V = mainCamera.modelMatrix();
-        glm::mat4 P = mainCamera.projection((( float ) window.width )/window.height );
+        glm::mat4 P = mainCamera.projection();
         shader.use();
         shader.setUniform( "P", P );
         shader.setUniform( "V", V );
@@ -140,10 +155,15 @@ namespace pr {
             directionalLights[i].addToScene( shader, i );
         }
         renderScene( shader );
+        skyboxShader.use();
+        skyboxShader.setUniform( "P", P );
+        skyboxShader.setUniform( "V", V );
+        glm::mat4 M = glm::rotate( glm::translate( glm::mat4(1), mainCamera.position.pos ), (float) -M_PI/2, glm::vec3(1, 0, 0) );
+        skyboxShader.setUniform( "M", M );
+        renderSkybox();
     }
 
     void Looper::updateScene() {
-        entities[0].pos = {0, 0, 7 + sin( updateTime )};
         entities[0].rotateD( deltaTime*100, Z );
         entities[2].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
         entities[2].rotateD( deltaTime*200, Z );
@@ -192,9 +212,11 @@ namespace pr {
     void Looper::initScene() {
         mainCamera.position.pos = glm::vec3( -5, -5, 3 );
         glGenFramebuffers( 1, &depthMapFrameBuffer );
+        textures["sky_map"] = Texture::cubeMap( "sky" );
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
         models["ufo"] = Model( "Low_poly_UFO" );
+        models["cube"] = Model( "cube" );
 //         models["building"] = Model( "Apartment Building_17_obj" );
 //         entities.push_back( Entity( models["building"]));
         models["chalice"] = Model( "chalice" );
@@ -209,6 +231,10 @@ namespace pr {
         entities.push_back( Entity( models["ufo"] ));
         entities[2].rotateD( 90, X );
         entities[2].scale( {0.1, 0.1, 0.1} );
+        entities.push_back( Entity( models["chalice"] ));
+        entities[3].setParent( entities[0] );
+        entities[3].translate( {2, 0, 0} );
+        entities[3].rotateD( -90, Z );
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),

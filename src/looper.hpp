@@ -27,6 +27,7 @@ namespace pr {
         double updateTime = 0;
         Shader shader;
         Shader shadowShader;
+        Shader skyboxShader;
         std::unordered_map< std::string, Model > models;
         std::vector< Entity > entities;
         std::unordered_map< std::string, Texture > textures;
@@ -44,6 +45,8 @@ namespace pr {
         void updateScene();
 
         void renderScene( Shader &shader );
+
+        void renderSkybox();
 
         void initListeners();
 
