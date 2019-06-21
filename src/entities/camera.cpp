@@ -47,6 +47,10 @@ namespace pr {
     }
 
     glm::mat4 Camera::modelMatrix() const {
+        return glm::translate( glm::mat4( 1 ), position.pos );
+    }
+
+    glm::mat4 Camera::view() const {
         return glm::lookAt( position.pos, position.pos + dir, nose );
     }
 
@@ -85,6 +89,44 @@ namespace pr {
             glm::vec3 right = glm::normalize( glm::cross( dir, glm::vec3{0, 0, 1} ));
             nose = glm::normalize( glm::cross( right, dir ));
         }
+    }
+
+    Camera::Camera() {
+
+    }
+
+    void Camera::viewOf( const Camera &camera ) {
+        this->position = camera.position;
+        this->pitch = camera.pitch;
+        this->yaw = camera.yaw;
+        this->dir = camera.dir;
+        this->nose = camera.nose;
+    }
+
+    void UFOCamera::moveLeft( const float &time ) {
+        position.translate(
+                -glm::normalize( glm::cross( glm::normalize( glm::vec3{dir.x, dir.y, 0} ), nose ))*speed.value*time );
+    }
+
+    void UFOCamera::moveRight( const float &time ) {
+        position.translate(
+                glm::normalize( glm::cross( glm::normalize( glm::vec3{dir.x, dir.y, 0} ), nose ))*speed.value*time );
+    }
+
+    void UFOCamera::moveForward( const float &time ) {
+        position.translate( glm::normalize( glm::vec3{dir.x, dir.y, 0} )*speed.value*time );
+    }
+
+    void UFOCamera::moveBackward( const float &time ) {
+        position.translate( -glm::normalize( glm::vec3{dir.x, dir.y, 0} )*speed.value*time );
+    }
+
+    void UFOCamera::moveUp( const float &time ) {
+        position.translate( {0, 0, time*speed} );
+    }
+
+    void UFOCamera::moveDown( const float &time ) {
+        position.translate( {0, 0, -time*speed} );
     }
 
 }

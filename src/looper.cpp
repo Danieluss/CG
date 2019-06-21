@@ -112,17 +112,17 @@ namespace pr {
         }
         glfwPollEvents();
         if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
-            mainCamera.move( deltaTime, FORWARD );
+            currentCamera->move( deltaTime, FORWARD );
         if( glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS )
-            mainCamera.move( deltaTime, BACKWARD );
+            currentCamera->move( deltaTime, BACKWARD );
         if( glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS )
-            mainCamera.move( deltaTime, LEFT );
+            currentCamera->move( deltaTime, LEFT );
         if( glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS )
-            mainCamera.move( deltaTime, RIGHT );
+            currentCamera->move( deltaTime, RIGHT );
         if( glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS )
-            mainCamera.move( deltaTime, UP );
+            currentCamera->move( deltaTime, UP );
         if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS )
-            mainCamera.move( deltaTime, DOWN );
+            currentCamera->move( deltaTime, DOWN );
     }
 
     void Looper::renderSkybox() {
@@ -137,18 +137,18 @@ namespace pr {
         int numberOfDirectionalLights = min(( int ) directionalLights.size(), 4 );
 
         for( int i = 0; i < numberOfDirectionalLights; i++ ) {
-            directionalLights[i].generateShadows( shadowShader, depthMapFrameBuffer, mainCamera.position.pos );
+            directionalLights[i].generateShadows( shadowShader, depthMapFrameBuffer, currentCamera->position.pos );
             renderScene( shadowShader );
         }
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
         glViewport( 0, 0, window.width, window.height );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-        glm::mat4 V = mainCamera.modelMatrix();
-        glm::mat4 P = mainCamera.projection();
+        glm::mat4 V = currentCamera->view();
+        glm::mat4 P = currentCamera->projection();
         shader.use();
         shader.setUniform( "P", P );
         shader.setUniform( "V", V );
-        shader.setUniform( "cameraLocation", mainCamera.position.pos );
+        shader.setUniform( "cameraLocation", currentCamera->position.pos );
 
         shader.setUniform( "numberOfDirectionalLights", numberOfDirectionalLights );
         for( int i = 0; i < directionalLights.size(); i++ ) {
@@ -158,7 +158,7 @@ namespace pr {
         skyboxShader.use();
         skyboxShader.setUniform( "P", P );
         skyboxShader.setUniform( "V", V );
-        glm::mat4 M = glm::rotate( glm::translate( glm::mat4( 1 ), mainCamera.position.pos ), ( float ) -M_PI/2,
+        glm::mat4 M = glm::rotate( glm::translate( glm::mat4( 1 ), currentCamera->position.pos ), ( float ) -M_PI/2,
                                    glm::vec3( 1, 0, 0 ));
         skyboxShader.setUniform( "M", M );
         renderSkybox();
@@ -177,10 +177,10 @@ namespace pr {
     void Looper::initListeners() {
         ListenerManager.lockCursor( true );
         ListenerManager.onMouseMotion( MotionObserver( [ this ]( glm::vec2 pos ) -> void {
-            mainCamera.turn( pos );
+            currentCamera->turn( pos );
         } ));
         ListenerManager.onMouseScroll( MotionObserver( [ this ]( glm::vec2 scroll ) -> void {
-            mainCamera.zoom( scroll[1] );
+            currentCamera->zoom( scroll[1] );
         } ));
         ListenerManager.onButton( GLFW_KEY_ESCAPE, ButtonObserver( [ this ]( int, int, int ) -> void {
             glfwSetWindowShouldClose( this->window, true );
@@ -189,14 +189,29 @@ namespace pr {
                 build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                 [ this ]( int, int, int ) -> void {
                     ListenerManager.lockCursor( !ListenerManager.isCursorLocked());
-                    mainCamera.locked = !ListenerManager.isCursorLocked();
+                    currentCamera->locked = !ListenerManager.isCursorLocked();
                 } ));
         ListenerManager.onButton(
                 GLFW_KEY_E,
                 ButtonObserver(
                         build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                         [ this ]( int, int, int ) -> void {
-                            mainCamera.accelerate( 1.25f );
+                            currentCamera->accelerate( 1.25f );
+                        }
+                ));
+        ListenerManager.onButton(
+                GLFW_KEY_F,
+                ButtonObserver(
+                        build< ButtonTrigger >().action( GLFW_PRESS ).get(),
+                        [ this ]( int, int, int ) -> void {
+                            if( !currentCamera->locked ) {
+                                if( currentCamera == &ufoCamera ) {
+                                    freeCamera.viewOf( ufoCamera );
+                                    currentCamera = &freeCamera;
+                                } else if( currentCamera == &freeCamera ) {
+                                    currentCamera = &ufoCamera;
+                                }
+                            }
                         }
                 ));
         ListenerManager.onButton(
@@ -205,13 +220,13 @@ namespace pr {
 //                        build< ButtonTrigger >().actions( { GLFW_PRESS, GLFW_REPEAT } ).get(),
                         build< ButtonTrigger >().action( GLFW_PRESS ).get(),
                         [ this ]( int, int, int ) -> void {
-                            mainCamera.accelerate( 0.8f );
+                            currentCamera->accelerate( 0.8f );
                         }
                 ));
     }
 
     void Looper::initScene() {
-        mainCamera.position.pos = glm::vec3( -5, -5, 3 );
+        currentCamera->position.pos = glm::vec3( -5, -5, 3 );
         glGenFramebuffers( 1, &depthMapFrameBuffer );
         textures["sky_map"] = Texture::cubeMap( "sky" );
         textures["bricks"] = Texture( "bricks.png" );
@@ -237,8 +252,9 @@ namespace pr {
         entities["ufo2"] = Entity( models["ufo"] );
         entities["ufo2"].rotateD( 90, X );
         entities["ufo2"].scale( {0.1, 0.1, 0.1} );
-        entities["ufo2"].translate( {10, 0, 0} );
+        entities["ufo2"].translate( {0, 0, -4.5} );
         entities["chalice2"].setParent( entities["chalice1"] );
+        entities["ufo2"].setParent( *currentCamera );
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
