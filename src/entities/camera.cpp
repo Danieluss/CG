@@ -129,4 +129,7 @@ namespace pr {
         position.translate( {0, 0, -time*speed} );
     }
 
+    glm::mat4 ThirdPersonCamera::view() const {
+        return glm::lookAt( position.pos - dir * distance, position.pos, ( nose - position.pos ) + position.pos - dir * distance );
+    }
 }

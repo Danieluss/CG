@@ -21,6 +21,8 @@ namespace pr {
         Window &window;
         Camera freeCamera;
         UFOCamera ufoCamera;
+        ThirdPersonCamera thirdPersonCamera;
+        Camera* previousCamera = nullptr;
         Camera* currentCamera = &ufoCamera;
         int frameCount = 0;
         double deltaTime = 0;

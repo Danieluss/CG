@@ -90,6 +90,6 @@ void main(void) {
     for(int i=0; i < numberOfDirectionalLights; i++) {
         col+=getDirectionalLight(directionalLights[i], ka, kd, ks, material.shininess, norm, viewerVector, posForDirectionalLight[i]);
     }
-//    pixelColor=vec4(col, 1.0);
-    pixelColor=vec4(texture(material.specular, texCoord).xyz, 1);
+    pixelColor=vec4(col, 1.0);
+//    pixelColor=vec4(texture(material.specular, texCoord).xyz, 1);
 }

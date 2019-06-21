@@ -158,8 +158,11 @@ namespace pr {
         skyboxShader.use();
         skyboxShader.setUniform( "P", P );
         skyboxShader.setUniform( "V", V );
-        glm::mat4 M = glm::rotate( glm::translate( glm::mat4( 1 ), currentCamera->position.pos ), ( float ) -M_PI/2,
-                                   glm::vec3( 1, 0, 0 ));
+        glm::mat4 M = glm::rotate( glm::translate( glm::mat4( 1 ), currentCamera == &thirdPersonCamera ?
+                                      thirdPersonCamera.position.pos - thirdPersonCamera.dir * thirdPersonCamera.distance :
+                                      currentCamera->position.pos ),
+                                  ( float ) -M_PI/2,
+                                  glm::vec3( 1, 0, 0 ));
         skyboxShader.setUniform( "M", M );
         renderSkybox();
     }
@@ -208,8 +211,31 @@ namespace pr {
                                 if( currentCamera == &ufoCamera ) {
                                     freeCamera.viewOf( ufoCamera );
                                     currentCamera = &freeCamera;
+                                    previousCamera = &ufoCamera;
+                                } else if( currentCamera == &thirdPersonCamera ) {
+                                    freeCamera.viewOf( thirdPersonCamera );
+                                    currentCamera = &freeCamera;
+                                    previousCamera = &thirdPersonCamera;
                                 } else if( currentCamera == &freeCamera ) {
+                                    currentCamera = previousCamera;
+                                }
+                            }
+                        }
+                ));
+        ListenerManager.onButton(
+                GLFW_KEY_T,
+                ButtonObserver(
+                        build< ButtonTrigger >().action( GLFW_PRESS ).get(),
+                        [ this ]( int, int, int ) -> void {
+                            if( !currentCamera->locked ) {
+                                if( currentCamera == &ufoCamera ) {
+                                    thirdPersonCamera.viewOf( ufoCamera );
+                                    currentCamera = &thirdPersonCamera;
+                                    entities["player_ufo"].setParent( thirdPersonCamera );
+                                } else if( currentCamera == &thirdPersonCamera ) {
+                                    ufoCamera.viewOf( thirdPersonCamera );
                                     currentCamera = &ufoCamera;
+                                    entities["player_ufo"].setParent( ufoCamera );
                                 }
                             }
                         }
@@ -249,12 +275,12 @@ namespace pr {
         entities["chalice2"] = Entity( models["chalice"] );
         entities["chalice2"].translate( {2, 0, 0} );
         entities["chalice2"].rotateD( -90, Z );
-        entities["ufo2"] = Entity( models["ufo"] );
-        entities["ufo2"].rotateD( 90, X );
-        entities["ufo2"].scale( {0.1, 0.1, 0.1} );
-        entities["ufo2"].translate( {0, 0, -4.5} );
+        entities["player_ufo"] = Entity( models["ufo"] );
+        entities["player_ufo"].rotateD( 90, X );
+        entities["player_ufo"].scale( {0.1, 0.1, 0.1} );
+        entities["player_ufo"].translate( {0, 0, -4.5} );
         entities["chalice2"].setParent( entities["chalice1"] );
-        entities["ufo2"].setParent( *currentCamera );
+        entities["player_ufo"].setParent( *currentCamera );
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
