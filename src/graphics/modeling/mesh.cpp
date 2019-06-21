@@ -47,7 +47,6 @@ void pr::Mesh::draw( pr::Shader &shader ) {
         } else if( type == NORMAL ) {
             name = "normal";
             number = std::to_string( normalId++ );
-            continue;
         } else if( type == AMBIENT ) {
             name = "ambient";
             number = std::to_string( heightId++ );

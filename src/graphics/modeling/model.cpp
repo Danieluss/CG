@@ -86,7 +86,7 @@ pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureTy
         material->GetTexture( type, i, &string );
         std::string filename = std::string( string.C_Str() );
         if( texturesLoaded.find( filename ) == texturesLoaded.end() ) {
-            //cout << filename << endl;
+//            cout << filename << endl;
             Texture texture( name + "/" + filename );
             texturesLoaded[ filename ] = texture;
             texture.type = texType;

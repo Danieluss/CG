@@ -29,8 +29,8 @@ namespace pr {
         Shader shadowShader;
         Shader skyboxShader;
         std::unordered_map< std::string, Model > models;
-        std::vector< Entity > entities;
         std::unordered_map< std::string, Texture > textures;
+        std::unordered_map< std::string, Entity > entities;
         std::vector< DirectionalLight > directionalLights;
         unsigned int depthMapFrameBuffer;
 

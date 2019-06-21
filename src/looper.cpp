@@ -68,8 +68,8 @@ namespace pr {
         textures["metal"].activate( 0 );
         drawCube( shader, M1 );
 
-        for( auto entity : entities ) {
-            entity.draw( shader );
+        for( const auto &strEntityPair : entities ) {
+            strEntityPair.second.draw( shader );
         }
 
     }
@@ -158,15 +158,16 @@ namespace pr {
         skyboxShader.use();
         skyboxShader.setUniform( "P", P );
         skyboxShader.setUniform( "V", V );
-        glm::mat4 M = glm::rotate( glm::translate( glm::mat4(1), mainCamera.position.pos ), (float) -M_PI/2, glm::vec3(1, 0, 0) );
+        glm::mat4 M = glm::rotate( glm::translate( glm::mat4( 1 ), mainCamera.position.pos ), ( float ) -M_PI/2,
+                                   glm::vec3( 1, 0, 0 ));
         skyboxShader.setUniform( "M", M );
         renderSkybox();
     }
 
     void Looper::updateScene() {
-        entities[0].rotateD( deltaTime*100, Z );
-        entities[2].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
-        entities[2].rotateD( deltaTime*200, Z );
+        entities["chalice1"].rotateD( deltaTime*100, Z );
+        entities["ufo1"].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
+        entities["ufo1"].rotateD( deltaTime*200, Z );
     }
 
     void Looper::swap() {
@@ -221,20 +222,23 @@ namespace pr {
 //         entities.push_back( Entity( models["building"]));
         models["chalice"] = Model( "chalice" );
         models["eight"] = Model( "eight" );
-        entities.push_back( Entity( models["chalice"] ));
-        entities.push_back( Entity( models["eight"] ));
-        entities[0].translate( {0, 0, 6} );
-        entities[0].rotateD( 60, X );
-        entities[1].translate( {-11, 0, 1} );
-        entities[1].rotateD( 90, X );
-        //TODO entities - iterable collection, map by some id
-        entities.push_back( Entity( models["ufo"] ));
-        entities[2].rotateD( 90, X );
-        entities[2].scale( {0.1, 0.1, 0.1} );
-        entities.push_back( Entity( models["chalice"] ));
-        entities[3].setParent( entities[0] );
-        entities[3].translate( {2, 0, 0} );
-        entities[3].rotateD( -90, Z );
+        entities["chalice1"] = ( Entity( models["chalice"] ));
+        entities["eight"] = ( Entity( models["eight"] ));
+        entities["chalice1"].translate( {0, 0, 6} );
+        entities["chalice1"].rotateD( 60, X );
+        entities["eight"].translate( {-11, 0, 1} );
+        entities["eight"].rotateD( 90, X );
+        entities["ufo1"] = Entity( models["ufo"] );
+        entities["ufo1"].rotateD( 90, X );
+        entities["ufo1"].scale( {0.1, 0.1, 0.1} );
+        entities["chalice2"] = Entity( models["chalice"] );
+        entities["chalice2"].translate( {2, 0, 0} );
+        entities["chalice2"].rotateD( -90, Z );
+        entities["ufo2"] = Entity( models["ufo"] );
+        entities["ufo2"].rotateD( 90, X );
+        entities["ufo2"].scale( {0.1, 0.1, 0.1} );
+        entities["ufo2"].translate( {10, 0, 0} );
+        entities["chalice2"].setParent( entities["chalice1"] );
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
