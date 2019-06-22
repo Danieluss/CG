@@ -37,9 +37,6 @@ void pr::Model::dfsScene( aiNode *node ) {
         meshes.push_back( meshFrom( scene->mMeshes[node->mMeshes[i]] ));
     }
     for( int i = 0; i < node->mNumChildren; i++ ) {
-        if( i == 4 ) {
-            std::cout<<i<<endl;
-        }
         dfsScene( node->mChildren[i] );
     }
 }
@@ -75,9 +72,7 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
     rgbcp( mesh.specular, tmp );
     aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &tmp );
     rgbcp( mesh.diffuse, tmp );
-    //TODO
     loadTextures( mesh, material, aiTextureType_DIFFUSE, DIFFUSE );
-    //TODO
     loadTextures( mesh, material, aiTextureType_SPECULAR, SPECULAR );
     loadTextures( mesh, material, aiTextureType_HEIGHT, NORMAL );
     loadTextures( mesh, material, aiTextureType_AMBIENT, AMBIENT );
@@ -92,10 +87,15 @@ pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureTy
         material->GetTexture( type, i, &string );
         std::string filename = std::string( string.C_Str() );
         if( texturesLoaded.find( filename ) == texturesLoaded.end() ) {
-            Texture texture( name + "/" + filename );
-            texturesLoaded[ filename ] = texture;
-            texture.type = texType;
-            mesh.textures.push_back( texture );
+            Texture* texture;
+            try {
+                texture = new Texture( name + "/" + filename );
+            } catch (...) {
+                texture = new Texture( filename );
+            }
+            texturesLoaded[ filename ] = *texture;
+            texture->type = texType;
+            mesh.textures.push_back( *texture );
         } else {
             Texture texture = texturesLoaded[filename];
             texture.type = texType;

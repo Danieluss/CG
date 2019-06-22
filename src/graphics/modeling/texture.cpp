@@ -11,6 +11,14 @@
 
 namespace pr {
 
+    inline bool approx( double x, double y ) {
+        return abs( x - y ) < 0.0001;
+    }
+
+    inline int closestPower( int x ) {
+        return ( int ) ( pow( 2, ceil( log2( x ))) + 0.1 );
+    }
+
     Texture::Texture( std::string filename ) {
         std::cout<<filename<<std::endl;
         filename = "res/textures/" + filename;
@@ -35,7 +43,16 @@ namespace pr {
 
             glBindTexture( GL_TEXTURE_2D, id );
             //TODO
-            glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data );
+            //loading res/textures/Miami_2525/f1q.jpg causes 0xC0000005 here
+            // width - 1 height - 1 works, but gives wrong results later
+            std::cout<<filename<<std::endl;
+            if( approx( log2( width ), round( log2( width ) ) ) ) {
+                std::cout<<"A"<<std::endl;
+                glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data );
+            } else {
+                std::cout<<"B"<<std::endl;
+                glTexImage2D( GL_TEXTURE_2D, 0, format, width - 1, height - 1, 0, format, GL_UNSIGNED_BYTE, data );
+            }
             //TODO
             glGenerateMipmap( GL_TEXTURE_2D );
 
@@ -81,14 +98,14 @@ namespace pr {
                                             "front.png",
                                             "back.png"};
         for( GLuint i = 0; i < 6; i++ ) {
-            unsigned char *data = stbi_load( (path + faces[i]).c_str(), &width, &height, &noChannels, 0 );
+            unsigned char *data = stbi_load(( path + faces[i] ).c_str(), &width, &height, &noChannels, 0 );
             if( data ) {
                 glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                               0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
                 );
                 stbi_image_free( data );
             } else {
-                std::cout<<"Cubemap texture failed to load at path: "<<(filename + "/" + faces[i])<<std::endl;
+                std::cout<<"Cubemap texture failed to load at path: "<<( filename + "/" + faces[i] )<<std::endl;
                 stbi_image_free( data );
             }
         }
