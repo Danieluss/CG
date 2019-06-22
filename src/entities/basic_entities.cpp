@@ -26,7 +26,7 @@ glm::mat4 pr::Entity::modelMatrix() const {
 void pr::Entity::draw( pr::Shader &shader ) const {
     glm::mat4 M = modelMatrix();
     shader.setUniform( "M", M );
-    glm::mat3 normalMatrix = glm::inverse( glm::mat3( M ));
+    glm::mat3 normalMatrix = glm::transpose( glm::inverse( glm::mat3( M )));
     shader.setUniform( "normalMatrix", normalMatrix );
     model->draw( shader );
 }

@@ -1,6 +1,9 @@
 #include"shader.hpp"
 #include<string>
 
+#include<iostream>
+using namespace std;
+
 namespace pr {
     Shader::Shader( const char *vertexShader, const char *fragmentShader ) {
         std::string pathToShaders = "src/graphics/shaders/glsl/";

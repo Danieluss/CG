@@ -80,13 +80,11 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
 
 void
 pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureType &type, const pr::TexType &texType ) {
-    //cout << material->GetTextureCount(type) << endl;
     for( int i = 0; i < material->GetTextureCount( type ); i++ ) {
         aiString string;
         material->GetTexture( type, i, &string );
         std::string filename = std::string( string.C_Str() );
         if( texturesLoaded.find( filename ) == texturesLoaded.end() ) {
-//            cout << filename << endl;
             Texture texture( name + "/" + filename );
             texturesLoaded[ filename ] = texture;
             texture.type = texType;
@@ -96,8 +94,10 @@ pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureTy
             texture.type = texType;
             mesh.textures.push_back(texture);
         }
+        if(type == aiTextureType_HEIGHT) {
+            cout  << texturesLoaded[ filename ].id << " " << filename << endl;
+        }
     }
-    //cout << endl;
 }
 
 pr::Model::Model() {

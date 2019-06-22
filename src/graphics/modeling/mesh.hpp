@@ -17,7 +17,7 @@ namespace pr {
         std::vector< Vertex > vertices;
         std::vector< Texture > textures;
 
-        std::vector<float> positions, normals, texcoords;
+        std::vector<float> positions, normals, texcoords, tangents;
 
         glm::vec3 specular, ambient, diffuse;
         float shininess;

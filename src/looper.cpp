@@ -26,6 +26,8 @@ namespace pr {
         shader.setUniform( "material.vspecular", spec );
         float shi = 100.0;
         shader.setUniform( "material.shininess", shi );
+        glm::vec3 tmp = glm::vec3(1,1,1);
+        shader.setUniform("material.vnormal", tmp);
         shader.setAttrib( "iPos", 3, myCubeVertices );
         shader.setAttrib( "iTexCoord", 2, myCubeTexCoords );
         shader.setAttrib( "iNormal", 3, myCubeVertexNormals );

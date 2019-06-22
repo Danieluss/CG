@@ -22,6 +22,7 @@ struct DirectionalLight {
 };
 
 uniform Material material;
+uniform sampler2D abc;
 uniform int numberOfDirectionalLights;
 uniform DirectionalLight directionalLights[4];
 uniform vec3 cameraLocation;
@@ -29,6 +30,8 @@ uniform vec3 cameraLocation;
 in vec3 pos;
 in vec2 texCoord;
 in vec3 normal;
+in vec3 tangent;
+in vec3 bitangent;
 in vec4 posForDirectionalLight[4];
 
 out vec4 pixelColor;
@@ -85,11 +88,20 @@ void main(void) {
         ks = material.vspecular;
     }
     vec3 norm = normalize(normal);
+    if(material.vnormal.x < 0) {
+        vec3 norm2 = 2.0*texture(material.normal, texCoord).rgb-1.0;
+        mat3 TBN = mat3(tangent, bitangent, normal);
+        norm = normalize(TBN*norm2);
+    }
     vec3 viewerVector = normalize(cameraLocation-pos);
     vec3 col = vec3(0,0,0);
+    // ka = vec3(0.5,0.5,0.5);
+    // kd = vec3(0.5,0.5,0.5);
+    // ks = vec3(0.5,0.5,0.5);
     for(int i=0; i < numberOfDirectionalLights; i++) {
         col+=getDirectionalLight(directionalLights[i], ka, kd, ks, material.shininess, norm, viewerVector, posForDirectionalLight[i]);
     }
-//    pixelColor=vec4(col, 1.0);
-    pixelColor=vec4(texture(material.normal, texCoord).xyz, 1);
+    pixelColor=vec4(col, 1.0);
+    // pixelColor=vec4(texture(material.normal, texCoord).xyz, 1);
+    // pixelColor=vec4(norm, 1.0);
 }

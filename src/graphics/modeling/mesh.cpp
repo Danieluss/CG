@@ -1,6 +1,7 @@
 #include "mesh.hpp"
 
 #include<iostream>
+#include<algorithm>
 using namespace std;
 #define ENUM_STRINGS
 
@@ -13,11 +14,13 @@ pr::Mesh::Mesh( const std::vector< unsigned int > &indices,
 void pr::Mesh::updateArrays() {
     positions.clear();
     normals.clear();
+    tangents.clear();
     texcoords.clear();
     for(Vertex &v : vertices) {
         for(int i=0; i < 3; i++) {
             positions.push_back(v.position[i]);
             normals.push_back(v.normal[i]);
+            tangents.push_back(v.tangent[i]);
         }
         texcoords.push_back(v.uv[0]);
         texcoords.push_back(1.0-v.uv[1]);
@@ -33,7 +36,9 @@ void pr::Mesh::draw( pr::Shader &shader ) {
     shader.setUniform("material.vdiffuse", diffuse);
     shader.setUniform("material.vspecular", specular);
     shader.setUniform("material.shininess", shininess);
-    for( unsigned int i = 0; i < textures.size(); i++ ) {
+    glm::vec3 normal = glm::vec3(1,1,1);
+    shader.setUniform("material.vnormal", normal);
+    for(int i = 0; i < textures.size(); i++ ) {
         std::string number;
         TexType type = textures[i].type;
         std::string name;
@@ -55,8 +60,11 @@ void pr::Mesh::draw( pr::Shader &shader ) {
         shader.setUniform(("material."+name).c_str(), i);
         shader.setUniform(("material.v"+name).c_str(), empty);
     }
+    unsigned int x = 2;
+    shader.setUniform("abc", x);
     shader.setAttrib("iPos", 3, positions.data());
     shader.setAttrib("iTexCoord", 2, texcoords.data());
+    shader.setAttrib("iTangent", 3, tangents.data());
     shader.setAttrib("iNormal", 3, normals.data());
     shader.draw(GL_TRIANGLES, indices.size(), indices.data());
 }
