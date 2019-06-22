@@ -19,6 +19,8 @@ namespace pr {
                 moveUp( time );
             else if( dir == DOWN )
                 moveDown( time );
+            else if( dir == STOP )
+                stop( time );
         }
     }
 
@@ -103,30 +105,36 @@ namespace pr {
         this->nose = camera.nose;
     }
 
+    void Camera::stop( const float &time ) {
+
+    }
+
     void UFOCamera::moveLeft( const float &time ) {
-        position.translate(
-                -glm::normalize( glm::cross( glm::normalize( glm::vec3{dir.x, dir.y, 0} ), nose ))*speed.value*time );
+        position.addInertia( -glm::normalize( glm::cross( glm::normalize( glm::vec3{dir.x, dir.y, 0} ), nose ) ), time, speed );
     }
 
     void UFOCamera::moveRight( const float &time ) {
-        position.translate(
-                glm::normalize( glm::cross( glm::normalize( glm::vec3{dir.x, dir.y, 0} ), nose ))*speed.value*time );
+        position.addInertia( glm::normalize( glm::cross( glm::normalize( glm::vec3{dir.x, dir.y, 0} ), nose ) ), time, speed );
     }
 
     void UFOCamera::moveForward( const float &time ) {
-        position.translate( glm::normalize( glm::vec3{dir.x, dir.y, 0} )*speed.value*time );
+        position.addInertia( glm::normalize( glm::vec3{dir.x, dir.y, 0} ), time, speed );
     }
 
     void UFOCamera::moveBackward( const float &time ) {
-        position.translate( -glm::normalize( glm::vec3{dir.x, dir.y, 0} )*speed.value*time );
+        position.addInertia( -glm::normalize( glm::vec3{dir.x, dir.y, 0} ), time, speed );
     }
 
     void UFOCamera::moveUp( const float &time ) {
-        position.translate( {0, 0, time*speed} );
+        position.addInertia( {0, 0, 1}, time, speed );
     }
 
     void UFOCamera::moveDown( const float &time ) {
-        position.translate( {0, 0, -time*speed} );
+        position.addInertia( {0, 0, -1}, time, speed );
+    }
+
+    void UFOCamera::stop( const float &time ) {
+        position.addInertia( -position.inertiaDir, time, speed );
     }
 
     glm::mat4 ThirdPersonCamera::view() const {

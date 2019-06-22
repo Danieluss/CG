@@ -125,20 +125,29 @@ namespace pr {
             {GLFW_KEY_S, BACKWARD},
             {GLFW_KEY_A, LEFT},
             {GLFW_KEY_D, RIGHT},
+            {GLFW_KEY_X, STOP},
             {GLFW_KEY_SPACE, UP},
-            {GLFW_KEY_LEFT_SHIFT, DOWN}
+            {GLFW_KEY_LEFT_CONTROL, DOWN}
         };
+        if( currentCamera == &ufoCamera || currentCamera == &thirdPersonCamera ) {
+            if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS ) {
+                currentCamera->speed = 1.f;
+            } else {
+                currentCamera->speed = 0.4f;
+            }
+        }
+
         for(auto &m : moves) {
             if( glfwGetKey( window, m.first ) == GLFW_PRESS ) {
-                Positionable previousPosition = currentCamera->position;
+                Inertiable previousPosition = currentCamera->position;
                 currentCamera->move( deltaTime, m.second );
                 if(detectCollision(m.second)) {
                     currentCamera->position = previousPosition;
                 }
             }
         }
-        // if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
-        //     currentCamera->move( deltaTime, FORWARD );
+//         if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
+//             currentCamera->move( deltaTime, FORWARD );
         // if( glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS )
         //     currentCamera->move( deltaTime, BACKWARD );
         // if( glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS )
@@ -195,9 +204,12 @@ namespace pr {
 
     void Looper::updateScene() {
         entities["chalice1"].rotateD( deltaTime*100, Z );
-        entities["ufo1"].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
+//        entities["ufo1"].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
         entities["ufo1"].rotateD( deltaTime*200, Z );
-        entities["ufo1"].pos = {0, 0, 0.25*sin( updateTime*2 )};
+//        entities["ufo1"].pos = {0, 0, 0.25*sin( updateTime*2 )};
+        entities["ufo1"].update( deltaTime );
+        ufoCamera.position.update( deltaTime );
+        thirdPersonCamera.position.update( deltaTime );
         entities["player_ufo"].rotateD( deltaTime*50, Z );
         entities["player_ufo"].pos = {0, 0, -4.5 + 0.2*sin( updateTime*2 )};
     }
@@ -311,12 +323,12 @@ namespace pr {
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
         models["ufo"] = Model( "Low_poly_UFO" );
-        models["city"] = Model( "Miami_2525" );
-        // models["building1"] = Model( "Amaryllis City" );
+//        models["city"] = Model( "Miami_2525" );
+//         models["building1"] = Model( "Miami_2525" );
         models["cube"] = Model( "cube" );
-        // entities["building1"] = Entity( models["building1"]);
-        // entities["building1"].rotateD( 90, X );
-        // entities["building1"].scale( { 0.01, 0.01, 0.01 } );
+//         entities["building1"] = Entity( models["building1"]);
+//         entities["building1"].rotateD( 90, X );
+//         entities["building1"].scale( { 1, 1, 1 } );
         models["chalice"] = Model( "chalice" );
         models["eight"] = Model( "eight" );
         entities["chalice1"] = ( Entity( models["chalice"] ));
@@ -326,6 +338,7 @@ namespace pr {
         entities["eight"].translate( {-11, 0, 1} );
         entities["eight"].rotateD( 90, X );
         entities["ufo1"] = Entity( models["ufo"] );
+        entities["ufo1"].addInertia( {0, 0, 1}, 10, 1 );
         entities["ufo1"].rotateD( 90, X );
         entities["ufo1"].scale( {0.1, 0.1, 0.1} );
         entities["chalice2"] = Entity( models["chalice"] );

@@ -6,7 +6,7 @@
 namespace pr {
 
     enum MoveDir {
-        FORWARD, BACKWARD, UP, DOWN, LEFT, RIGHT
+        FORWARD, BACKWARD, UP, DOWN, LEFT, RIGHT, STOP
     };
 
     struct Parentable {
@@ -36,6 +36,22 @@ namespace pr {
         virtual void translate( const glm::vec3 &offset );
 
         virtual void translate( const double &x, const double &y = 0, const double &z = 0 );
+
+    };
+
+    struct Inertiable : Positionable {
+
+        float inertia = 0;
+        float changeStrength = 14;
+        float inertiaFalloff = 0.35;
+        float minimumFalloff = 0.3;
+        float minimumAngleCoeff = 0.5;
+
+        glm::vec3 inertiaDir = {1, 0, 0};
+
+        void addInertia( glm::vec3 vector, float time, float strengthMod );
+
+        void update( float time );
 
     };
 

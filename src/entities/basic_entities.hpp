@@ -6,7 +6,7 @@
 
 namespace pr {
 
-    class Entity : public Positionable, public Rotatable, public Scalable, public Parentable {
+    class Entity : public Inertiable, public Rotatable, public Scalable, public Parentable {
 
         Model* model;
 

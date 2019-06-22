@@ -14,12 +14,12 @@ namespace pr {
 
         float fov = 70;
         float minDist = 0.1;
-        float maxDist = 200;
+        float maxDist = 1000;
         float ratio = 1.77777777778;
 
         float yaw = 0;
         MinMaxProperty< float > pitch{-89.f, 89.f, 0.f};
-        Positionable position;
+        Inertiable position;
         glm::vec3 dir{1, 0, 0};
         glm::vec3 nose{0, 0, 1};
 
@@ -45,6 +45,8 @@ namespace pr {
 
     protected:
 
+        virtual void stop( const float &time );
+
         virtual void moveLeft( const float &time );
 
         virtual void moveRight( const float &time );
@@ -62,6 +64,8 @@ namespace pr {
     struct UFOCamera : public Camera {
 
     protected:
+
+        void stop( const float &time ) override;
 
         void moveLeft( const float &time ) override;
 

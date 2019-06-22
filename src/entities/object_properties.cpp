@@ -1,6 +1,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <iostream>
 #include "object_properties.hpp"
 
 namespace pr {
@@ -46,5 +48,19 @@ namespace pr {
 
     glm::mat4 Scalable::transform( glm::mat4 matrix ) const {
         return glm::scale( matrix, scale_ );
+    }
+
+    void Inertiable::update( float time ) {
+        pos += inertiaDir * inertia * time;
+        inertia = inertia * ( inertiaFalloff ) > minimumFalloff ? inertia * ( 1 - ( inertiaFalloff * time ) ) : inertia - ( minimumFalloff * time );
+        inertia = inertia >= 0 ? inertia : 0;
+    }
+
+    void Inertiable::addInertia( glm::vec3 vector, float time, float strengthMod ) {
+        strengthMod = glm::clamp( strengthMod, 0.f, 1.f );
+        float changeStr = changeStrength * strengthMod * ( glm::clamp( (float) cos( glm::angle( inertiaDir, vector ) / 2 ), minimumAngleCoeff, 1.f ) );
+        glm::vec3 tmp = vector * time * changeStr + inertiaDir * inertia;
+        inertiaDir = glm::normalize( tmp );
+        inertia = glm::length( tmp );
     }
 }
