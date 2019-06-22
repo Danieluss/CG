@@ -6,6 +6,8 @@ using namespace std;
 
 std::unordered_map< std::string, pr::Texture > pr::Model::texturesLoaded = std::unordered_map< std::string, pr::Texture >();
 
+int i = 0;
+
 pr::Model::Model( const std::string &filename ) {
     name = filename;
     Assimp::Importer importer;
@@ -29,12 +31,15 @@ pr::Model pr::Model::fromFile( const std::string &filename ) {
     return model;
 }
 
+
 void pr::Model::dfsScene( aiNode *node ) {
     for( int i = 0; i < node->mNumMeshes; i++ ) {
         meshes.push_back( meshFrom( scene->mMeshes[node->mMeshes[i]] ));
     }
-
     for( int i = 0; i < node->mNumChildren; i++ ) {
+        if( i == 4 ) {
+            std::cout<<i<<endl;
+        }
         dfsScene( node->mChildren[i] );
     }
 }
@@ -70,7 +75,9 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
     rgbcp( mesh.specular, tmp );
     aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &tmp );
     rgbcp( mesh.diffuse, tmp );
+    //TODO
     loadTextures( mesh, material, aiTextureType_DIFFUSE, DIFFUSE );
+    //TODO
     loadTextures( mesh, material, aiTextureType_SPECULAR, SPECULAR );
     loadTextures( mesh, material, aiTextureType_HEIGHT, NORMAL );
     loadTextures( mesh, material, aiTextureType_AMBIENT, AMBIENT );
@@ -93,9 +100,6 @@ pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureTy
             Texture texture = texturesLoaded[filename];
             texture.type = texType;
             mesh.textures.push_back(texture);
-        }
-        if(type == aiTextureType_HEIGHT) {
-            cout  << texturesLoaded[ filename ].id << " " << filename << endl;
         }
     }
 }

@@ -263,9 +263,10 @@ namespace pr {
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
         models["ufo"] = Model( "Low_poly_UFO" );
+        models["city"] = Model( "Miami_2525" );
         models["cube"] = Model( "cube" );
-//         models["building"] = Model( "Apartment Building_17_obj" );
-//         entities.push_back( Entity( models["building"]));
+//        models["building"] = Model( "Apartment Building_17_obj" );
+//        entities["building"] = Entity( models["building"]);
         models["chalice"] = Model( "chalice" );
         models["eight"] = Model( "eight" );
         entities["chalice1"] = ( Entity( models["chalice"] ));
