@@ -31,10 +31,7 @@ void pr::Entity::draw( pr::Shader &shader ) const {
     model->draw( shader );
 }
 
-void pr::Entity::setParent( const pr::Parentable &entity ) {
-//    std::cout<<"PARENTING"<<std::endl;
-    parent = &entity;
-}
+
 
 bool pr::Entity::operator==( const pr::Entity& entity ) const {
     return &entity == this;

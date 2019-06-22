@@ -27,7 +27,9 @@ namespace pr {
 
         void move( const float& time, MoveDir dir );
 
-        glm::mat4 modelMatrix() const;
+        virtual glm::mat4 modelMatrix() const;
+
+        virtual glm::mat4 view() const;
 
         glm::mat4 projection();
 
@@ -37,20 +39,51 @@ namespace pr {
 
         void accelerate( const float &d );
 
-    private:
+        Camera();
 
-        void moveLeft( const float &time );
+        virtual void viewOf( const Camera& camera );
 
-        void moveRight( const float &time );
+    protected:
 
-        void moveForward( const float &time );
+        virtual void moveLeft( const float &time );
 
-        void moveBackward( const float &time );
+        virtual void moveRight( const float &time );
 
-        void moveUp( const float &time );
+        virtual void moveForward( const float &time );
 
-        void moveDown( const float &time );
+        virtual void moveBackward( const float &time );
 
+        virtual void moveUp( const float &time );
+
+        virtual void moveDown( const float &time );
+
+    };
+
+    struct UFOCamera : public Camera {
+
+    protected:
+
+        void moveLeft( const float &time ) override;
+
+        void moveRight( const float &time ) override;
+
+        void moveForward( const float &time ) override;
+
+        void moveBackward( const float &time ) override;
+
+        void moveUp( const float &time ) override;
+
+        void moveDown( const float &time ) override;
+
+    };
+
+    struct ThirdPersonCamera : public UFOCamera {
+
+        float distance = 5;
+
+    protected:
+
+        glm::mat4 view() const override;
     };
 
 }

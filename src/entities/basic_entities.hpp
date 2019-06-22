@@ -9,7 +9,6 @@ namespace pr {
     class Entity : public Positionable, public Rotatable, public Scalable, public Parentable {
 
         Model* model;
-        const Parentable* parent = nullptr;
 
     public:
 
@@ -19,7 +18,6 @@ namespace pr {
 
         Entity( Model &model );
 
-        void setParent( const Parentable& entity );
 
         glm::mat4 modelMatrix() const;
 

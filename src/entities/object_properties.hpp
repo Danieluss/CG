@@ -11,6 +11,10 @@ namespace pr {
 
     struct Parentable {
 
+        const Parentable* parent = nullptr;
+
+        void setParent( const Parentable& entity );
+
         virtual glm::mat4 modelMatrix() const = 0;
 
     };

@@ -5,6 +5,11 @@
 
 namespace pr {
 
+    void Parentable::setParent( const pr::Parentable &entity ) {
+//    std::cout<<"PARENTING"<<std::endl;
+        parent = &entity;
+    }
+
     void Positionable::translate( const glm::vec3 &offset ) {
         pos += offset;
     }
