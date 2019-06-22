@@ -13,6 +13,8 @@
 #include "entities/camera.hpp"
 #include "graphics/directional_light.hpp"
 
+#define COLLISION_TEX_SIZE 16
+
 namespace pr {
 
     class Looper {
@@ -32,11 +34,13 @@ namespace pr {
         Shader shader;
         Shader shadowShader;
         Shader skyboxShader;
+        Shader collisionShader;
         std::unordered_map< std::string, Model > models;
         std::unordered_map< std::string, Texture > textures;
         std::unordered_map< std::string, Entity > entities;
         std::vector< DirectionalLight > directionalLights;
         unsigned int depthMapFrameBuffer;
+       // std::unordered_map< MoveDir, unsigned int> collisionTextures;
 
         void processInput();
 
@@ -55,6 +59,10 @@ namespace pr {
         void initListeners();
 
         void initScene();
+
+        bool detectCollision(MoveDir dir);
+
+        void initCollisions();
 
     public:
 

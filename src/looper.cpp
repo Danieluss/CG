@@ -81,7 +81,10 @@ namespace pr {
                                        shadowShader( "v_shadow.glsl",
                                                      "f_shadow.glsl" ),
                                        skyboxShader( "v_skybox.glsl",
-                                                     "f_skybox.glsl" ) {
+                                                     "f_skybox.glsl" ),
+                                        collisionShader( "v_collision.glsl",
+                                                    "f_collision.glsl")
+                                                                        {
         initListeners();
         initScene();
     }
@@ -102,6 +105,10 @@ namespace pr {
         recentTime = updateTime;
     }
 
+    bool Looper::detectCollision(MoveDir dir) {
+        return false;
+    }
+
     void Looper::processInput() {
         double deltaTime = updateTime - recentTime;
         frameCount++;
@@ -113,18 +120,35 @@ namespace pr {
             frameCount = 0;
         }
         glfwPollEvents();
-        if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
-            currentCamera->move( deltaTime, FORWARD );
-        if( glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS )
-            currentCamera->move( deltaTime, BACKWARD );
-        if( glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS )
-            currentCamera->move( deltaTime, LEFT );
-        if( glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS )
-            currentCamera->move( deltaTime, RIGHT );
-        if( glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS )
-            currentCamera->move( deltaTime, UP );
-        if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS )
-            currentCamera->move( deltaTime, DOWN );
+        vector<pair<int, MoveDir>> moves = {
+            {GLFW_KEY_W, FORWARD},
+            {GLFW_KEY_S, BACKWARD},
+            {GLFW_KEY_A, LEFT},
+            {GLFW_KEY_D, RIGHT},
+            {GLFW_KEY_SPACE, UP},
+            {GLFW_KEY_LEFT_SHIFT, DOWN}
+        };
+        for(auto &m : moves) {
+            if( glfwGetKey( window, m.first ) == GLFW_PRESS ) {
+                Positionable previousPosition = currentCamera->position;
+                currentCamera->move( deltaTime, m.second );
+                if(detectCollision(m.second)) {
+                    currentCamera->position = previousPosition;
+                }
+            }
+        }
+        // if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
+        //     currentCamera->move( deltaTime, FORWARD );
+        // if( glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS )
+        //     currentCamera->move( deltaTime, BACKWARD );
+        // if( glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS )
+        //     currentCamera->move( deltaTime, LEFT );
+        // if( glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS )
+        //     currentCamera->move( deltaTime, RIGHT );
+        // if( glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS )
+        //     currentCamera->move( deltaTime, UP );
+        // if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS )
+        //     currentCamera->move( deltaTime, DOWN );
     }
 
     void Looper::renderSkybox() {
@@ -256,20 +280,43 @@ namespace pr {
                 ));
     }
 
-    void Looper::initScene() {
+    void Looper::initCollisions() {
+        vector< pair<MoveDir, unsigned int> > data = {
+            { FORWARD, 0 },
+            { BACKWARD, 0 },
+            { LEFT, 0},
+            { RIGHT, 0 },
+            { UP, 0 },
+            { DOWN, 0 }
+        };
+        // for(auto &d : data) {
+        //     collisionTextures[d.first] = d.second;
+        // }
+        // for(auto &c : collisionTextures) {
+        //     glGenTextures(1, &c.second);
+        //     glBindTexture(GL_TEXTURE_2D, c.second);
+        //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, COLLISION_TEX_SIZE, COLLISION_TEX_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        //     collisionShader.use();
+            
+        //     entities["player_ufo"].draw(collisionShader);
+        // }
+    }
+
+	void Looper::initScene() {
         currentCamera->position.pos = glm::vec3( -5, -5, 3 );
         glGenFramebuffers( 1, &depthMapFrameBuffer );
         textures["sky_map"] = Texture::cubeMap( "sky" );
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
         models["ufo"] = Model( "Low_poly_UFO" );
-//        models["city"] = Model( "Miami_2525" );
-        models["building1"] = Model( "Amaryllis City" );
+        models["city"] = Model( "Miami_2525" );
+        // models["building1"] = Model( "Amaryllis City" );
         models["cube"] = Model( "cube" );
-//        models["building"] = Model( "Apartment Building_17_obj" );
-        entities["building1"] = Entity( models["building1"]);
-        entities["building1"].rotateD( 90, X );
-        entities["building1"].scale( { 0.01, 0.01, 0.01 } );
+        // entities["building1"] = Entity( models["building1"]);
+        // entities["building1"].rotateD( 90, X );
+        // entities["building1"].scale( { 0.01, 0.01, 0.01 } );
         models["chalice"] = Model( "chalice" );
         models["eight"] = Model( "eight" );
         entities["chalice1"] = ( Entity( models["chalice"] ));

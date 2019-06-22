@@ -11,7 +11,7 @@ struct DirectionalLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-    sampler2DShadow depthMapTexture;
+    sampler2D depthMapTexture;
     mat4 lightMatrix;
 };
 uniform int numberOfDirectionalLights;
