@@ -173,6 +173,9 @@ namespace pr {
         entities["chalice1"].rotateD( deltaTime*100, Z );
         entities["ufo1"].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
         entities["ufo1"].rotateD( deltaTime*200, Z );
+        entities["ufo1"].pos = {0, 0, 0.25*sin( updateTime*2 )};
+        entities["player_ufo"].rotateD( deltaTime*50, Z );
+        entities["player_ufo"].pos = {0, 0, -4.5 + 0.2*sin( updateTime*2 )};
     }
 
     void Looper::swap() {
