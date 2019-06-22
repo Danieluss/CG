@@ -22,7 +22,6 @@ struct DirectionalLight {
 };
 
 uniform Material material;
-uniform sampler2D abc;
 uniform int numberOfDirectionalLights;
 uniform DirectionalLight directionalLights[4];
 uniform vec3 cameraLocation;
