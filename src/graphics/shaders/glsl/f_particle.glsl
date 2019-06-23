@@ -5,9 +5,10 @@ out vec4 pixelColor;
 
 uniform float alpha;
 uniform sampler2D sprite;
+uniform sampler2D depthMapTexture;
 
 void main()
 {
-    vec4 tmp = texture(sprite, texCoord);
-    pixelColor = (tmp.xyz, tmp.w * alpha);
+    vec4 tmp = texture(depthMapTexture, texCoord);
+    pixelColor = vec4(tmp.xyz, tmp.w * alpha);
 }

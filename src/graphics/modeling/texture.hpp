@@ -15,6 +15,7 @@ namespace pr {
     struct Texture {
 
         unsigned int id;
+        unsigned width, height;
         TexType type;
 
         Texture();

@@ -11,7 +11,7 @@
 
 namespace pr {
 
-    inline bool approx( double x, double y ) {
+    static inline bool approx( double x, double y ) {
         return abs( x - y ) < 0.0001;
     }
 
@@ -42,25 +42,18 @@ namespace pr {
                 format = GL_RGBA;
 
             glBindTexture( GL_TEXTURE_2D, id );
-            //TODO
-            //loading res/textures/Miami_2525/f1q.jpg causes 0xC0000005 here
-            // width - 1 height - 1 works, but gives wrong results later
             std::cout<<filename<<std::endl;
             if( approx( log2( width ), round( log2( width ) ) ) ) {
                 std::cout<<"A"<<std::endl;
                 glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data );
+                this->width = width;
+                this->height = height;
             } else {
                 std::cout<<"B"<<std::endl;
                 glTexImage2D( GL_TEXTURE_2D, 0, format, width - 1, height - 1, 0, format, GL_UNSIGNED_BYTE, data );
+                this->width = width - 1;
+                this->height = height - 1;
             }
-            //TODO
-            glGenerateMipmap( GL_TEXTURE_2D );
-
-            //Optional parameters - need additional research
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
         } else {
             throw ( "Error while loading texture" );
         }

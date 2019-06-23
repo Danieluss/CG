@@ -2,6 +2,7 @@
 #define CG_LOOPER_HPP
 
 #include <iostream>
+#include "graphics/eye_light.hpp"
 #include "entities/camera.hpp"
 #include <vector>
 #include "entities/basic_entities.hpp"
@@ -39,6 +40,8 @@ namespace pr {
         std::unordered_map< std::string, Model > models;
         std::unordered_map< std::string, Texture > textures;
         std::unordered_map< std::string, Entity > entities;
+        std::unordered_map< std::string, Particle > particles;
+        EyeLight eyeLight;
         std::vector< DirectionalLight > directionalLights;
         unsigned int depthMapFrameBuffer;
        // std::unordered_map< MoveDir, unsigned int> collisionTextures;
@@ -55,6 +58,8 @@ namespace pr {
 
         void renderScene( Shader &shader );
 
+        void renderParticles();
+
         void renderSkybox();
 
         void initListeners();
@@ -64,6 +69,7 @@ namespace pr {
         bool detectCollision(MoveDir dir);
 
         void initCollisions();
+
 
     public:
 

@@ -26,8 +26,8 @@ namespace pr {
         shader.setUniform( "material.vspecular", spec );
         float shi = 100.0;
         shader.setUniform( "material.shininess", shi );
-        glm::vec3 tmp = glm::vec3(1,1,1);
-        shader.setUniform("material.vnormal", tmp);
+        glm::vec3 tmp = glm::vec3( 1, 1, 1 );
+        shader.setUniform( "material.vnormal", tmp );
         shader.setAttrib( "iPos", 3, myCubeVertices );
         shader.setAttrib( "iTexCoord", 2, myCubeTexCoords );
         shader.setAttrib( "iNormal", 3, myCubeVertexNormals );
@@ -83,10 +83,9 @@ namespace pr {
                                        skyboxShader( "v_skybox.glsl",
                                                      "f_skybox.glsl" ),
                                        collisionShader( "v_collision.glsl",
-                                                    "f_collision.glsl"),
+                                                        "f_collision.glsl" ),
                                        particleShader( "v_particle.glsl",
-                                                    "f_particle.glsl")
-                                                                        {
+                                                       "f_particle.glsl" ) {
         initListeners();
         initScene();
     }
@@ -107,7 +106,7 @@ namespace pr {
         recentTime = updateTime;
     }
 
-    bool Looper::detectCollision(MoveDir dir) {
+    bool Looper::detectCollision( MoveDir dir ) {
         return false;
     }
 
@@ -122,14 +121,14 @@ namespace pr {
             frameCount = 0;
         }
         glfwPollEvents();
-        vector<pair<int, MoveDir>> moves = {
-            {GLFW_KEY_W, FORWARD},
-            {GLFW_KEY_S, BACKWARD},
-            {GLFW_KEY_A, LEFT},
-            {GLFW_KEY_D, RIGHT},
-            {GLFW_KEY_X, STOP},
-            {GLFW_KEY_SPACE, UP},
-            {GLFW_KEY_LEFT_CONTROL, DOWN}
+        vector< pair< int, MoveDir>> moves = {
+                {GLFW_KEY_W,            FORWARD},
+                {GLFW_KEY_S,            BACKWARD},
+                {GLFW_KEY_A,            LEFT},
+                {GLFW_KEY_D,            RIGHT},
+                {GLFW_KEY_X,            STOP},
+                {GLFW_KEY_SPACE,        UP},
+                {GLFW_KEY_LEFT_CONTROL, DOWN}
         };
         if( currentCamera == &ufoCamera || currentCamera == &thirdPersonCamera ) {
             if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS ) {
@@ -139,12 +138,13 @@ namespace pr {
             }
         }
 
-        for(auto &m : moves) {
+        for( auto &m : moves ) {
             if( glfwGetKey( window, m.first ) == GLFW_PRESS ) {
                 Inertiable previousPosition = currentCamera->position;
                 currentCamera->move( deltaTime, m.second );
-                if(detectCollision(m.second)) {
+                if( detectCollision( m.second )) {
                     currentCamera->position = previousPosition;
+
                 }
             }
         }
@@ -162,6 +162,36 @@ namespace pr {
         //     currentCamera->move( deltaTime, DOWN );
     }
 
+    void Looper::renderParticles() {
+//        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask( false );
+        glm::mat4 V = currentCamera->view();
+        for( auto& pair : particles ) {
+            auto& particle = pair.second;
+            glm::mat4 M = glm::translate( glm::mat4(1), particle.position );
+//            glm::mat3 tSubV = glm::transpose( glm::mat3( V ) );
+            for( int i = 0; i < 3; i++ ) {
+                for( int j = 0; j < 3; j++ ) {
+                    M[i][j] = V[j][i];
+                }
+            }
+            M = glm::rotate( M, glm::radians( particle.rot2d ), {0, 0, -1} );
+            M = glm::scale( M, particle.scale );
+            glm::mat4 VM = V * M;
+            particleShader.setUniform( "VM", VM );
+            particleShader.setUniform( "alpha", particle.alpha );
+            particleShader.setAttrib( "pos", 2, squareVertices );
+            particleShader.setAttrib( "iTexCoord", 2, squareUVs );
+            particle.texture->activate( 0 );
+            particleShader.draw( GL_TRIANGLE_STRIP, 4 );
+        }
+        glDisable(GL_BLEND);
+        glDepthMask( true );
+//        glEnable(GL_DEPTH_TEST);
+    }
+
     void Looper::renderSkybox() {
         glDepthFunc( GL_LEQUAL );
         skyboxShader.setAttrib( "iPos", 3, myCubeVertices );
@@ -177,6 +207,8 @@ namespace pr {
             directionalLights[i].generateShadows( shadowShader, depthMapFrameBuffer, currentCamera->position.pos );
             renderScene( shadowShader );
         }
+        eyeLight.generateShadows( shadowShader, depthMapFrameBuffer, *currentCamera );
+
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
         glViewport( 0, 0, window.width, window.height );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -196,12 +228,17 @@ namespace pr {
         skyboxShader.setUniform( "P", P );
         skyboxShader.setUniform( "V", V );
         glm::mat4 M = glm::rotate( glm::translate( glm::mat4( 1 ), currentCamera == &thirdPersonCamera ?
-                                      thirdPersonCamera.position.pos - thirdPersonCamera.dir * thirdPersonCamera.distance :
-                                      currentCamera->position.pos ),
-                                  ( float ) -M_PI/2,
-                                  glm::vec3( 1, 0, 0 ));
+                                                                   thirdPersonCamera.position.pos -
+                                                                   thirdPersonCamera.dir*thirdPersonCamera.distance :
+                                                                   currentCamera->position.pos ),
+                                   ( float ) -M_PI/2,
+                                   glm::vec3( 1, 0, 0 ));
         skyboxShader.setUniform( "M", M );
         renderSkybox();
+        particleShader.use();
+        eyeLight.addToScene( particleShader, 1 );
+        particleShader.setUniform( "P", P );
+        renderParticles();
     }
 
     void Looper::updateScene() {
@@ -214,6 +251,15 @@ namespace pr {
         thirdPersonCamera.position.update( deltaTime );
         entities["player_ufo"].rotateD( deltaTime*50, Z );
         entities["player_ufo"].pos = {0, 0, -4.5 + 0.2*sin( updateTime*2 )};
+        vector<std::string> rmParticles;
+        for( auto pair : particles ) {
+            if( particles[pair.first].update( deltaTime )) {
+                rmParticles.push_back( pair.first );
+            }
+        }
+        for( std::string string : rmParticles ) {
+            particles.erase( particles.find( string ));
+        }
     }
 
     void Looper::swap() {
@@ -295,13 +341,13 @@ namespace pr {
     }
 
     void Looper::initCollisions() {
-        vector< pair<MoveDir, unsigned int> > data = {
-            { FORWARD, 0 },
-            { BACKWARD, 0 },
-            { LEFT, 0},
-            { RIGHT, 0 },
-            { UP, 0 },
-            { DOWN, 0 }
+        vector< pair< MoveDir, unsigned int > > data = {
+                {FORWARD,  0},
+                {BACKWARD, 0},
+                {LEFT,     0},
+                {RIGHT,    0},
+                {UP,       0},
+                {DOWN,     0}
         };
         // for(auto &d : data) {
         //     collisionTextures[d.first] = d.second;
@@ -313,12 +359,20 @@ namespace pr {
         //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         //     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, COLLISION_TEX_SIZE, COLLISION_TEX_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         //     collisionShader.use();
-            
+
         //     entities["player_ufo"].draw(collisionShader);
         // }
     }
 
-	void Looper::initScene() {
+    void Looper::initScene() {
+        textures["boom"] = Texture( "greenboom.png" );
+        particles["pp"].texture = &textures["boom"];
+        particles["pp"].fade = sinTransition( 10, 2 );
+        particles["pp"].scale = {10, 10, 10};
+        particles["pp1"].texture = &textures["boom"];
+        particles["pp1"].translation = constTranslation( {3, 3, 3} );
+        particles["pp1"].fade = sinTransition( 10, 2 );
+        particles["pp1"].scale = {10, 10, 10};
         currentCamera->position.pos = glm::vec3( -5, -5, 3 );
         glGenFramebuffers( 1, &depthMapFrameBuffer );
         textures["sky_map"] = Texture::cubeMap( "sky" );
@@ -326,7 +380,7 @@ namespace pr {
         textures["metal"] = Texture( "metal.png" );
         models["ufo"] = Model( "Low_poly_UFO" );
 //        models["city"] = Model( "Miami_2525" );
-//         models["building1"] = Model( "Miami_2525" );
+//        models["building1"] = Model( "Miami_2525" );
         models["cube"] = Model( "cube" );
 //         entities["building1"] = Entity( models["building1"]);
 //         entities["building1"].rotateD( 90, X );
@@ -340,7 +394,7 @@ namespace pr {
         entities["eight"].translate( {-11, 0, 1} );
         entities["eight"].rotateD( 90, X );
         entities["ufo1"] = Entity( models["ufo"] );
-        entities["ufo1"].addInertia( {0, 0, 1}, 10, 1 );
+        entities["ufo1"].addInertia( {0, 0, 1}, 0.1, 1 );
         entities["ufo1"].rotateD( 90, X );
         entities["ufo1"].scale( {0.1, 0.1, 0.1} );
         entities["chalice2"] = Entity( models["chalice"] );
@@ -356,5 +410,6 @@ namespace pr {
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
+        recentTime = glfwGetTime();
     }
 }
