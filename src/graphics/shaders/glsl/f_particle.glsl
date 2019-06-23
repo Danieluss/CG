@@ -9,6 +9,6 @@ uniform sampler2D depthMapTexture;
 
 void main()
 {
-    vec4 tmp = texture(depthMapTexture, texCoord);
+    vec4 tmp = texture(sprite, texCoord);
     pixelColor = vec4(tmp.xyz, tmp.w * alpha);
 }

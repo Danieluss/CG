@@ -14,7 +14,7 @@ namespace pr {
 
         float fov = 70;
         float minDist = 0.1;
-        float maxDist = 1000;
+        float maxDist = 100;
         float ratio = 1.77777777778;
 
         float yaw = 0;

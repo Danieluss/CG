@@ -70,7 +70,6 @@ namespace pr {
 
         void initCollisions();
 
-
     public:
 
         Looper( Window &window );

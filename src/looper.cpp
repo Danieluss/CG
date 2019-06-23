@@ -85,7 +85,8 @@ namespace pr {
                                        collisionShader( "v_collision.glsl",
                                                         "f_collision.glsl" ),
                                        particleShader( "v_particle.glsl",
-                                                       "f_particle.glsl" ) {
+                                                    "f_particle.glsl")
+                                                                        {
         initListeners();
         initScene();
     }
@@ -184,7 +185,10 @@ namespace pr {
             particleShader.setUniform( "alpha", particle.alpha );
             particleShader.setAttrib( "pos", 2, squareVertices );
             particleShader.setAttrib( "iTexCoord", 2, squareUVs );
+            int i = 0;// REEEEEEE
             particle.texture->activate( 0 );
+            std::string str = "sprite";
+            particleShader.setUniform( str.c_str(), i );
             particleShader.draw( GL_TRIANGLE_STRIP, 4 );
         }
         glDisable(GL_BLEND);
