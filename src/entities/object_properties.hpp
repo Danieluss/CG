@@ -42,10 +42,10 @@ namespace pr {
     struct Inertiable : Positionable {
 
         float inertia = 0;
-        float changeStrength = 14;
-        float inertiaFalloff = 0.35;
-        float minimumFalloff = 0.3;
-        float minimumAngleCoeff = 0.5;
+        float changeStrength = 10;
+        float inertiaFalloff = 0.25;
+        float minimumFalloff = 0.25;
+        float minimumAngleCoeff = 0.6;
 
         glm::vec3 inertiaDir = {1, 0, 0};
 

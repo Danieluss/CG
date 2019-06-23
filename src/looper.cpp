@@ -82,8 +82,10 @@ namespace pr {
                                                      "f_shadow.glsl" ),
                                        skyboxShader( "v_skybox.glsl",
                                                      "f_skybox.glsl" ),
-                                        collisionShader( "v_collision.glsl",
-                                                    "f_collision.glsl")
+                                       collisionShader( "v_collision.glsl",
+                                                    "f_collision.glsl"),
+                                       particleShader( "v_particle.glsl",
+                                                    "f_particle.glsl")
                                                                         {
         initListeners();
         initScene();

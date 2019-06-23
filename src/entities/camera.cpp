@@ -134,7 +134,7 @@ namespace pr {
     }
 
     void UFOCamera::stop( const float &time ) {
-        position.addInertia( -position.inertiaDir, time, speed );
+        position.addInertia( -position.inertiaDir, time, 1 );
     }
 
     glm::mat4 ThirdPersonCamera::view() const {

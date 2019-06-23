@@ -35,6 +35,7 @@ namespace pr {
         Shader shadowShader;
         Shader skyboxShader;
         Shader collisionShader;
+        Shader particleShader;
         std::unordered_map< std::string, Model > models;
         std::unordered_map< std::string, Texture > textures;
         std::unordered_map< std::string, Entity > entities;
