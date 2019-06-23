@@ -187,6 +187,7 @@ namespace pr {
             particleShader.setAttrib( "iTexCoord", 2, squareUVs );
             int i = 0;// REEEEEEE
             particle.texture->activate( 0 );
+            //
             std::string str = "sprite";
             particleShader.setUniform( str.c_str(), i );
             particleShader.draw( GL_TRIANGLE_STRIP, 4 );
