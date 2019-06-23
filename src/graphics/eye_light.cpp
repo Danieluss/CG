@@ -22,7 +22,7 @@ namespace pr {
         std::string name = "depthMapTexture";
         glActiveTexture( GL_TEXTURE0 + texUnit );
         glBindTexture( GL_TEXTURE_2D, depthMapTexture );
-        shader.setUniform( name.c_str(), texUnit );
+//        shader.setUniform( name.c_str(), texUnit );
     }
 
     void EyeLight::generateShadows( Shader &shader, unsigned int depthMapFrameBuffer, Camera& camera ) {

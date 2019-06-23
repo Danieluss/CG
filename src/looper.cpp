@@ -169,6 +169,8 @@ namespace pr {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDepthMask( false );
         glm::mat4 V = currentCamera->view();
+        particleShader.setUniform( "camNear", currentCamera->minDist );
+        particleShader.setUniform( "camFar", currentCamera->maxDist );
         for( auto& pair : particles ) {
             auto& particle = pair.second;
             glm::mat4 M = glm::translate( glm::mat4(1), particle.position );
@@ -185,11 +187,11 @@ namespace pr {
             particleShader.setUniform( "alpha", particle.alpha );
             particleShader.setAttrib( "pos", 2, squareVertices );
             particleShader.setAttrib( "iTexCoord", 2, squareUVs );
-            int i = 0;// REEEEEEE
-            particle.texture->activate( 0 );
+            unsigned i = 0;// REEEEEEE
+            particle.texture->activate( i );
             //
             std::string str = "sprite";
-            particleShader.setUniform( str.c_str(), i );
+//            particleShader.setUniform( str.c_str(), i );
             particleShader.draw( GL_TRIANGLE_STRIP, 4 );
         }
         glDisable(GL_BLEND);
@@ -213,6 +215,7 @@ namespace pr {
             renderScene( shadowShader );
         }
         eyeLight.generateShadows( shadowShader, depthMapFrameBuffer, *currentCamera );
+        renderScene( shadowShader );
 
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
         glViewport( 0, 0, window.width, window.height );
@@ -372,8 +375,11 @@ namespace pr {
     void Looper::initScene() {
         textures["boom"] = Texture( "greenboom.png" );
         particles["pp"].texture = &textures["boom"];
-        particles["pp"].fade = sinTransition( 10, 2 );
-        particles["pp"].scale = {10, 10, 10};
+        particles["pp"].fade = neverFade();
+//        particles["pp"].fade = sinTransition( 10, 2 );
+//        particles["pp"].fade = sinTransition( 10, 2 );
+        particles["pp"].scale = {1, 1, 1};
+        particles["pp"].translation = constTranslation( {0, 0, 1} );
         particles["pp1"].texture = &textures["boom"];
         particles["pp1"].translation = constTranslation( {3, 3, 3} );
         particles["pp1"].fade = sinTransition( 10, 2 );

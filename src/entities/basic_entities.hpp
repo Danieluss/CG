@@ -40,8 +40,6 @@ namespace pr {
 
     std::function< float( float ) > linearTransition( float expiration, float a = 0, float b = 1 );
 
-    std::function< float( float ) > posLinearTransition( float expiration, float a = 0, float b = 1 );
-
     std::function< float( float ) > negSquareTransition( float a, float expiration );
 
     std::function< float( float ) > posSquareTransition( float a, float expiration );
@@ -64,9 +62,9 @@ namespace pr {
         float rot2d = 0;
         float alpha = 1;
         glm::vec3 position;
-        std::function< float( float ) > fade = linearTransition( 10 );
+        std::function< float( float ) > fade = linearTransition( 10, 1, 0 );
         std::function< glm::vec3( float ) > translation = constTranslation( {0, 0, 0} );
-        std::function< float( float ) > rotation = linearTransition( 10, 0, 360 );
+        std::function< float( float ) > rotation = constTransition( 0, 0 );
         Texture *texture;
 
         bool update( float time );
