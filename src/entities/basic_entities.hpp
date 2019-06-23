@@ -2,11 +2,12 @@
 #define CG_BASIC_ENTITIES_HPP
 
 #include <functional>
-#include "good_random.hpp"
 #include "graphics/modeling/model.hpp"
 #include "object_properties.hpp"
 
 namespace pr {
+
+    bool approx( double a, double b );
 
     class Entity : public Inertiable, public Rotatable, public Scalable, public Parentable {
 
@@ -31,61 +32,44 @@ namespace pr {
 
     };
 
-    struct Particle : public Inertiable, public Scalable {
+    std::function< float( float ) > neverFade();
 
-        static std::function< float( float ) > cosTransition( float expiration, float power ) {
-            return
-                [ = ]( float time ) -> float {
-                    return time < expiration ? pow( cos( time * M_PI / 2 / expiration ), power ) : 0;
-                };
-        }
+    std::function< float( float ) > cosTransition( float expiration, float power );
 
-        static std::function< float( float ) > sinTransition( float expiration, float power ) {
-            return
-                [ = ]( float time ) -> float {
-                    return time < expiration ? pow( sin( time * M_PI / expiration ), power ) : 0;
-                };
-        }
+    std::function< float( float ) > sinTransition( float expiration, float power );
 
-        static std::function< float( float ) > negLinearTransition( float expiration ) {
-            return
-                [ = ]( float time ) -> float {
-                    return time < expiration ? ( expiration - time ) / expiration : 0;
-                };
-        }
+    std::function< float( float ) > linearTransition( float expiration, float a = 0, float b = 1 );
 
-        static std::function< float( float ) > posLinearTransition( float expiration ) {
-            return
-                    [ = ]( float time ) -> float {
-                        return time < expiration ? ( time ) / expiration : 1;
-                    };
-        }
+    std::function< float( float ) > posLinearTransition( float expiration, float a = 0, float b = 1 );
 
-        static std::function< float( float ) > negSquareTransition( float a, float expiration ) {
-            return
-                [ = ]( float time ) -> float {
-                    return time < expiration ? - a * ( - pow( time - expiration / 2, 2 ) + pow( expiration, 2 ) / 4 ) : 0;
-                };
-        }
+    std::function< float( float ) > negSquareTransition( float a, float expiration );
 
-        static std::function< float( float ) > posSquareTransition( float a, float expiration ) {
-            return
-                [ = ]( float time ) -> float {
-                    return time < expiration ? a * ( pow( time - expiration / 2, 2 ) - pow( expiration, 2 ) / 4 ) : 0;
-                };
-        }
+    std::function< float( float ) > posSquareTransition( float a, float expiration );
 
-        static std::function< float( float ) > randomTransition( float expiration ) {
-            return
-                    [ = ]( float time ) -> float {
-                        static float acc;
-                        acc += RNG.get() * time;
-                        return acc;
-                    };
-        }
+    std::function< float( float ) > constTransition( float a, float expiration );
 
-        float timeStamp = -1;
-        std::function< float( float ) > fade;
+    std::function< float( float ) > randomTransition();
+
+    std::function< glm::vec3( float ) > constTranslation( glm::vec3 vector );
+
+    std::function< glm::vec3( float ) > linearTranslation( glm::vec3 vector, glm::vec3 velocity );
+
+    std::function< glm::vec3( float ) >
+    acceleratedTranslation( glm::vec3 vector, glm::vec3 velocity0, glm::vec3 acceleration );
+
+    struct Particle {
+
+        float timeAcc = 0;
+        glm::vec3 scale = {1, 1, 1};
+        float rot2d = 0;
+        float alpha = 1;
+        glm::vec3 position;
+        std::function< float( float ) > fade = linearTransition( 10 );
+        std::function< glm::vec3( float ) > translation = constTranslation( {0, 0, 0} );
+        std::function< float( float ) > rotation = linearTransition( 10, 0, 360 );
+        Texture *texture;
+
+        bool update( float time );
 
     };
 

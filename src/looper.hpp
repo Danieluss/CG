@@ -39,6 +39,7 @@ namespace pr {
         std::unordered_map< std::string, Model > models;
         std::unordered_map< std::string, Texture > textures;
         std::unordered_map< std::string, Entity > entities;
+        std::unordered_map< std::string, Particle > particles;
         std::vector< DirectionalLight > directionalLights;
         unsigned int depthMapFrameBuffer;
        // std::unordered_map< MoveDir, unsigned int> collisionTextures;
@@ -55,6 +56,8 @@ namespace pr {
 
         void renderScene( Shader &shader );
 
+        void renderParticles( unsigned );
+
         void renderSkybox();
 
         void initListeners();
@@ -66,6 +69,8 @@ namespace pr {
         void initCollisions();
 
     public:
+
+        unsigned copyDepthBuffer();
 
         Looper( Window &window );
 

@@ -6,16 +6,16 @@
 namespace pr {
     class GoodRandom {
         int a;
-        std::mt19937 rng;
+        std::mt19937 _rng;
         std::uniform_real_distribution< double > dist;
 
     public:
-        GoodRandom() : dist( 0.0, 1.0 ) {}
-        double get() {
-            return dist( rng );
-        }
+        static GoodRandom rng;
+        GoodRandom();
+        double get();
+        int getInt( int a, int b );
+        int getInt( int b ); // <a; b)
     };
-    extern GoodRandom RNG;
 }
 
 

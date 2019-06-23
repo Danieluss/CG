@@ -5,11 +5,10 @@ in vec2 iTexCoord;
 out vec2 texCoord;
 
 uniform mat4 P;
-uniform vec2 offset;
-uniform float scale;
+uniform mat4 VM;
 
 void main()
 {
     texCoord = iTexCoord;
-    gl_Position = P * vec4((pos * scale) + offset, 0.0, 1.0);
+    gl_Position = P * VM * vec4(pos, 0.0, 1.0);
 }

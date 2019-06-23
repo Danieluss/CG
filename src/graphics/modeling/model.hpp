@@ -35,6 +35,10 @@ namespace pr {
         t.y = u.y;
     }
 
+    static float squareVertices[] = {-0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, -0.5f};
+
+    static float squareUVs[] = {0.f, 0.f, 0.f, 1.f, 1.f, 0.f, 1.f, 1.f};
+
     struct Model {
 
         std::string name;
