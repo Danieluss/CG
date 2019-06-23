@@ -85,7 +85,8 @@ namespace pr {
                                        collisionShader( "v_collision.glsl",
                                                         "f_collision.glsl" ),
                                        particleShader( "v_particle.glsl",
-                                                       "f_particle.glsl" ) {
+                                                    "f_particle.glsl")
+                                                                        {
         initListeners();
         initScene();
     }
