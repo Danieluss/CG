@@ -9,7 +9,7 @@ namespace pr {
         unsigned width, height;
         unsigned depthMapTexture;
         EyeLight();
-        void addToScene( Shader &shader, unsigned texUnit );
+        void addToScene( Shader &shader, int texUnit );
         void generateShadows( Shader &shader, unsigned int depthMapFrameBuffer, Camera& camera );
     };
 }

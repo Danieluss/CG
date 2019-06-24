@@ -11,6 +11,7 @@ using namespace std;
 
 namespace pr {
     DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) : direction(direction), ambient(ambient), diffuse(diffuse), specular(specular) {
+        direction = 100.0f*normalize(direction);
         glGenTextures(1, &depthMapTexture);
         glBindTexture(GL_TEXTURE_2D, depthMapTexture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 

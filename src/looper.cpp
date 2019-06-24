@@ -172,7 +172,7 @@ namespace pr {
             particleShader.setUniform( "alpha", particle.alpha );
             particleShader.setAttrib( "pos", 2, squareVertices );
             particleShader.setAttrib( "iTexCoord", 2, squareUVs );
-            unsigned i = 0;// REEEEEEE
+            int i = 0;// REEEEEEE
             particle.texture->activate( i );
             //
             std::string str = "sprite";
@@ -269,9 +269,11 @@ namespace pr {
             if(currentCamera == &thirdPersonCamera) {
                 thirdPersonCamera.position.pos+=dm*3.f;
                 thirdPersonCamera.position.inertiaDir = glm::reflect( thirdPersonCamera.position.inertiaDir, glm::normalize( dm ) );
+                thirdPersonCamera.position.inertia*=0.5;
             } else {
                 ufoCamera.position.pos+=dm*3.f;
                 ufoCamera.position.inertiaDir = glm::reflect( ufoCamera.position.inertiaDir, glm::normalize( dm ) );
+                thirdPersonCamera.position.inertia*=0.5;
             }
         }
 
