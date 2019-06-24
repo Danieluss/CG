@@ -251,11 +251,12 @@ namespace pr {
         entities["player_ufo"].pos = {0, 0, -4.5 + 0.2*sin( updateTime*2 )};
         glm::vec3 dm;
         if(detectCollision(dm)) {
-            dm*=3.0f;
             if(currentCamera == &thirdPersonCamera) {
-                thirdPersonCamera.position.pos+=dm;
+                thirdPersonCamera.position.pos+=dm*3.f;
+                thirdPersonCamera.position.inertiaDir = glm::reflect( thirdPersonCamera.position.inertiaDir, glm::normalize( dm ) );
             } else {
-                ufoCamera.position.pos+=dm;
+                ufoCamera.position.pos+=dm*3.f;
+                ufoCamera.position.inertiaDir = glm::reflect( ufoCamera.position.inertiaDir, glm::normalize( dm ) );
             }
         }
 
