@@ -37,7 +37,7 @@ namespace pr {
         shader.draw( GL_TRIANGLES, myCubeVertexCount );
     }
 
-    void Looper::renderScene( Shader &shader ) {
+    void Looper::renderScene( Shader &shader, bool playerUfoVisible) {
         glm::mat4 M = glm::mat4( 1.0 );
 //        M = glm::scale( M, {100, 100, 100} );
 //        shader.setUniform( "M", M );
@@ -68,9 +68,14 @@ namespace pr {
 //
         M1 = glm::scale( M, glm::vec3( 10.0f, 10.0f, 0.2f ));
         textures["metal"].activate( 0 );
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, collisionTexture);
         drawCube( shader, M1 );
 
         for( const auto &strEntityPair : entities ) {
+            if(playerUfoVisible == false && strEntityPair.first == "player_ufo") {
+                continue;
+            }
             strEntityPair.second.draw( shader );
         }
 
@@ -107,19 +112,16 @@ namespace pr {
         recentTime = updateTime;
     }
 
-    bool Looper::detectCollision( MoveDir dir ) {
-        return false;
-    }
-
     void Looper::processInput() {
         double deltaTime = updateTime - recentTime;
         frameCount++;
         framesTime += deltaTime;
         if( framesTime >= fpsRefresh ) {
-            std::cout<<"\rFPS: "<<frameCount/framesTime;
+            std::cout<<"\rFPS: "<<frameCount/framesTime << " dist: " << maxv;
             fflush(stdout);
             framesTime = 0;
             frameCount = 0;
+            maxv=0;
         }
         glfwPollEvents();
         vector< pair< int, MoveDir>> moves = {
@@ -141,26 +143,9 @@ namespace pr {
 
         for( auto &m : moves ) {
             if( glfwGetKey( window, m.first ) == GLFW_PRESS ) {
-                Inertiable previousPosition = currentCamera->position;
                 currentCamera->move( deltaTime, m.second );
-                if( detectCollision( m.second )) {
-                    currentCamera->position = previousPosition;
-
-                }
             }
         }
-//         if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
-//             currentCamera->move( deltaTime, FORWARD );
-        // if( glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS )
-        //     currentCamera->move( deltaTime, BACKWARD );
-        // if( glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS )
-        //     currentCamera->move( deltaTime, LEFT );
-        // if( glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS )
-        //     currentCamera->move( deltaTime, RIGHT );
-        // if( glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS )
-        //     currentCamera->move( deltaTime, UP );
-        // if( glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS )
-        //     currentCamera->move( deltaTime, DOWN );
     }
 
     void Looper::renderParticles() {
@@ -255,10 +240,25 @@ namespace pr {
         entities["ufo1"].rotateD( deltaTime*200, Z );
 //        entities["ufo1"].pos = {0, 0, 0.25*sin( updateTime*2 )};
         entities["ufo1"].update( deltaTime );
+
+        Inertiable previousPosition = ufoCamera.position;
+        if(currentCamera == &thirdPersonCamera) {
+            previousPosition = thirdPersonCamera.position;
+        }
         ufoCamera.position.update( deltaTime );
         thirdPersonCamera.position.update( deltaTime );
         entities["player_ufo"].rotateD( deltaTime*50, Z );
         entities["player_ufo"].pos = {0, 0, -4.5 + 0.2*sin( updateTime*2 )};
+        glm::vec3 dm;
+        if(detectCollision(dm)) {
+            dm*=3.0f;
+            if(currentCamera == &thirdPersonCamera) {
+                thirdPersonCamera.position.pos+=dm;
+            } else {
+                ufoCamera.position.pos+=dm;
+            }
+        }
+
         vector<std::string> rmParticles;
         for( auto pair : particles ) {
             if( particles[pair.first].update( deltaTime )) {
@@ -348,28 +348,99 @@ namespace pr {
                 ));
     }
 
-    void Looper::initCollisions() {
-        vector< pair< MoveDir, unsigned int > > data = {
-                {FORWARD,  0},
-                {BACKWARD, 0},
-                {LEFT,     0},
-                {RIGHT,    0},
-                {UP,       0},
-                {DOWN,     0}
-        };
-        // for(auto &d : data) {
-        //     collisionTextures[d.first] = d.second;
-        // }
-        // for(auto &c : collisionTextures) {
-        //     glGenTextures(1, &c.second);
-        //     glBindTexture(GL_TEXTURE_2D, c.second);
-        //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        //     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, COLLISION_TEX_SIZE, COLLISION_TEX_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        //     collisionShader.use();
+#define deb(A) cout << A[0] << " " << A[1] << " " << A[2] << "\n"
 
-        //     entities["player_ufo"].draw(collisionShader);
-        // }
+    std::vector<float> Looper::getDepthVector(glm::vec3 dir, bool ufoVisible) {
+        glBindFramebuffer(GL_FRAMEBUFFER, collisionMapFrameBuffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, collisionTexture, 0);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        glViewport(0, 0, COLLISION_TEX_SIZE, COLLISION_TEX_SIZE);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        
+        // glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+        // glViewport( 0, 0, window.width, window.height );
+        // glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+        collisionShader.use();
+        float a = COLLISION_VIEW_SIZE;
+        glm::mat4 P = glm::ortho(-a, a, -a, a, 0.f, 2*a);
+        glm::vec3 eye, center, nose;
+        UFOCamera camera;
+        if(currentCamera == &thirdPersonCamera) {
+            camera.viewOf(thirdPersonCamera);
+        } else {
+            camera.viewOf(ufoCamera);
+        }
+        center = camera.position.pos;
+        // camera.move(1.0, dir);
+        // camera.position.update(1.0);
+        // eye = camera.position.pos;
+        glm::vec3 v = 2*a*glm::normalize(dir);
+        center[2]-=2;
+        eye = center+v;
+        if(ufoVisible == false) {
+            std::swap(eye, center);
+        }
+        nose = glm::vec3(0,0,1);
+        if(dir == glm::vec3(0,0,1)) {
+            nose = glm::vec3(-1,0,0);
+        } else if(dir == glm::vec3(0,0,-1)) {
+            nose = glm::vec3(1,0,0);
+        }
+        glm::mat4 V = glm::lookAt(eye, center, nose);
+        glm::mat4 PV = P*V;
+        collisionShader.setUniform("P", P);
+        collisionShader.setUniform("V", V);
+        if(ufoVisible) {
+            entities["player_ufo"].draw(collisionShader);
+        } else {
+            renderScene(collisionShader, false);
+        }
+        // glfwSwapBuffers( window );
+        vector<float> tex;
+        tex.resize(COLLISION_TEX_SIZE*COLLISION_TEX_SIZE);
+        glBindTexture(GL_TEXTURE_2D, collisionTexture);
+        glGetTexImage(GL_TEXTURE_2D, 0,  GL_DEPTH_COMPONENT,  GL_FLOAT, tex.data());
+        return tex;
+    }
+
+    bool Looper::detectCollision(glm::vec3 &translation) {
+        vector<glm::vec3> data = {
+            glm::vec3(1,0,0), glm::vec3(-1,0,0), glm::vec3(0,1,0), glm::vec3(0,-1,0), glm::vec3(0,0,1), glm::vec3(0,0,-1)
+        };
+        translation = glm::vec3(0,0,0);
+        bool res=false;
+        for(auto d : data) {
+            vector<float> a = getDepthVector(d, true);
+            vector<float> b = getDepthVector(d, false);
+            float maxValue=0.0;
+            for(int i=0; i < COLLISION_TEX_SIZE; i++) {
+                for(int j=0; j < COLLISION_TEX_SIZE; j++) {
+                    float ufo = 1.0-a[COLLISION_TEX_SIZE*(i+1)-1-j];
+                    float world = 1.0-b[COLLISION_TEX_SIZE*i+j];
+                    if(ufo < 0.001) {
+                        continue;
+                    }
+                    maxValue = max(maxValue, ufo+world);
+                }
+            }
+            if(maxValue > 0.95) {
+                translation-=d*(maxValue-0.95f);
+                res = true;
+            }
+            maxv = max(maxv, maxValue);
+        }
+        return res;
+    }
+
+    void Looper::initCollisions() {
+        glGenTextures(1, &collisionTexture);
+        glBindTexture(GL_TEXTURE_2D, collisionTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, COLLISION_TEX_SIZE, COLLISION_TEX_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glGenFramebuffers(1, &collisionMapFrameBuffer);
     }
 
     void Looper::initScene() {
@@ -384,18 +455,18 @@ namespace pr {
         particles["pp1"].translation = constTranslation( {3, 3, 3} );
         particles["pp1"].fade = sinTransition( 10, 2 );
         particles["pp1"].scale = {10, 10, 10};
-        currentCamera->position.pos = glm::vec3( -5, -5, 3 );
+        currentCamera->position.pos = glm::vec3( -5, -5, 4 );
         glGenFramebuffers( 1, &depthMapFrameBuffer );
         textures["sky_map"] = Texture::cubeMap( "sky" );
         textures["bricks"] = Texture( "bricks.png" );
         textures["metal"] = Texture( "metal.png" );
         models["ufo"] = Model( "Low_poly_UFO" );
-//        models["city"] = Model( "Miami_2525" );
-//        models["building1"] = Model( "Miami_2525" );
+    //    models["city"] = Model( "Miami_2525" );
+    //    models["building1"] = Model( "Miami_2525" );
         models["cube"] = Model( "cube" );
-//         entities["building1"] = Entity( models["building1"]);
-//         entities["building1"].rotateD( 90, X );
-//         entities["building1"].scale( { 1, 1, 1 } );
+        // entities["building1"] = Entity( models["building1"]);
+        // entities["building1"].rotateD( 90, X );
+        // entities["building1"].scale( { 1, 1, 1 } );
         models["chalice"] = Model( "chalice" );
         models["eight"] = Model( "eight" );
         entities["chalice1"] = ( Entity( models["chalice"] ));
@@ -422,5 +493,6 @@ namespace pr {
         directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         recentTime = glfwGetTime();
+        initCollisions();
     }
 }

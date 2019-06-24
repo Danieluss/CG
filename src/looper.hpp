@@ -14,7 +14,9 @@
 #include "entities/camera.hpp"
 #include "graphics/directional_light.hpp"
 
-#define COLLISION_TEX_SIZE 16
+#define COLLISION_TEX_SIZE 32
+#define COLLISION_VIEW_SIZE 4.0
+#include<unistd.h>
 
 namespace pr {
 
@@ -44,7 +46,9 @@ namespace pr {
         EyeLight eyeLight;
         std::vector< DirectionalLight > directionalLights;
         unsigned int depthMapFrameBuffer;
-       // std::unordered_map< MoveDir, unsigned int> collisionTextures;
+        std::unordered_map< MoveDir, std::vector<float>, std::hash<int>> collisionTextures;
+        unsigned int collisionMapFrameBuffer;
+        unsigned int collisionTexture;
 
         void processInput();
 
@@ -56,7 +60,7 @@ namespace pr {
 
         void updateScene();
 
-        void renderScene( Shader &shader );
+        void renderScene( Shader &shader, bool playerUfoVisible=true);
 
         void renderParticles();
 
@@ -66,9 +70,13 @@ namespace pr {
 
         void initScene();
 
-        bool detectCollision(MoveDir dir);
+        std::vector<float> getDepthVector(glm::vec3 dir, bool ufoVisible);
+
+        bool detectCollision(glm::vec3 &translation);
 
         void initCollisions();
+
+        float maxv=0.0;
 
     public:
 

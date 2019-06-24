@@ -64,6 +64,7 @@ int main() {
     } catch( ... ) {
         deb( "Unexpected exception" );
     }
+    std::cout << std::endl;
     glfwTerminate();
 
     return 0;
