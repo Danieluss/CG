@@ -19,6 +19,6 @@ float depthDistance(in vec2 uv) {
 
 void main() {
 //    float collisionAlpha = clamp( ( depthDistance( texCoord ) - ( distance( gl_FragCoord, vec4( 0, 0, 0, 0 ) ) - scale / 2 ) ) / scale, 0, 1 );
-    vec4 tmp = texture( sprite, texCoord );
+    vec4 tmp = texture( depthMapTexture, texCoord );
     pixelColor = vec4( tmp.xyz, tmp.w * alpha );
 }

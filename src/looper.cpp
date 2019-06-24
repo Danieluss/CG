@@ -235,6 +235,21 @@ namespace pr {
     }
 
     void Looper::updateScene() {
+        static double noParticleTime;
+        noParticleTime += deltaTime;
+        if( noParticleTime > 2 ) {
+            noParticleTime -= 2;
+            for( int i = 0; i < 10; i++ ) {
+                std::string id = std::to_string(i);
+                particles[id].texture = &textures["boom"];
+                particles[id].fade = linearTransition( 2, 1, 0 );
+    //        particles["pp"].fade = sinTransition( 10, 2 );
+    //        particles["pp"].fade = sinTransition( 10, 2 );
+                particles[id].scale = {3, 3, 3};
+                particles[id].translation = linearTranslation( {5 + i, 0, 1}, {0, 0, 1} );
+            }
+        }
+
         entities["chalice1"].rotateD( deltaTime*100, Z );
 //        entities["ufo1"].pos = {0, 0, 1 + 0.5*sin( updateTime*2 )};
         entities["ufo1"].rotateD( deltaTime*200, Z );
@@ -451,7 +466,7 @@ namespace pr {
 //        particles["pp"].fade = sinTransition( 10, 2 );
 //        particles["pp"].fade = sinTransition( 10, 2 );
         particles["pp"].scale = {1, 1, 1};
-        particles["pp"].translation = constTranslation( {0, 0, 1} );
+        particles["pp"].translation = linearTranslation( {0, 0, 1}, {0, 0, 1} );
         particles["pp1"].texture = &textures["boom"];
         particles["pp1"].translation = constTranslation( {3, 3, 3} );
         particles["pp1"].fade = sinTransition( 10, 2 );
