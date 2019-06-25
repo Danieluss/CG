@@ -11,6 +11,7 @@ int i = 0;
 pr::Model::Model( const std::string &filename ) {
     name = filename;
     Assimp::Importer importer;
+    cerr << "res/models/" + filename + ".obj" << endl;
     scene = importer.ReadFile( "res/models/" + filename + ".obj", aiProcess_Triangulate | aiProcess_CalcTangentSpace );
     if( !scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode ) {
         throw ( "assimp error while loading: " + filename + " description: " + importer.GetErrorString());
@@ -53,8 +54,9 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
             xyzcp( vertex.tangent, aMesh->mTangents[i] );
             xyzcp( vertex.bitangent, aMesh->mBitangents[i] );
         }
-        if( aMesh->mTextureCoords[0] )
+        if( aMesh->mTextureCoords[0] ) {
             xycp( vertex.uv, aMesh->mTextureCoords[0][i] );
+        }
         mesh.vertices.push_back( vertex );
     }
     for( int i = 0; i < aMesh->mNumFaces; i++ ) {
@@ -64,6 +66,13 @@ pr::Mesh pr::Model::meshFrom( aiMesh *aMesh ) {
         }
     }
     aiMaterial *material = scene->mMaterials[aMesh->mMaterialIndex];
+    aiString materialName;
+    aiGetMaterialString(material, AI_MATKEY_NAME, &materialName);
+    if(string(materialName.C_Str()) == "ground") {
+        for(Vertex &v : mesh.vertices) {
+            v.uv*= 10.0;
+        }
+    }
     aiColor4D tmp;
     aiGetMaterialFloat( material, AI_MATKEY_SHININESS, &mesh.shininess );
     aiGetMaterialColor( material, AI_MATKEY_COLOR_AMBIENT, &tmp );

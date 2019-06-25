@@ -2,7 +2,7 @@
 # Material Count: 2
 
 newmtl ground
-Ns 96.078431
+Ns 9.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
 Ks 0.500000 0.500000 0.500000
@@ -10,17 +10,19 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd Hotel_Hous_AO.png
-map_Bump -bm 0.172933 -s 10.000000 10.000000 1.000000 Steel_N.jpg
-map_Ks Steel_S.jpg
+map_Kd oldBricks/diffuse.jpg
+map_Ka oldBricks/diffuse.jpg
+bump oldBricks/normal.jpg
+
 
 newmtl hotel_glas
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
-Ks 0.000000 0.000000 0.000000
+Ks 1.000000 1.000000 1.000000
 Ke 0.344000 0.344000 0.344000
 Ni 1.000000
 d 0.300000
 illum 1
-refl -s 0.800000 0.800000 1.000000 REF 1.jpg
+map_Kd glass.jpg
+map_Ka glass.jpg
