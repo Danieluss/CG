@@ -6,8 +6,8 @@
 
 using namespace std;
 
-#define SHADOW_HEIGHT 1024
-#define SHADOW_WIDTH 1024
+#define SHADOW_HEIGHT 2048
+#define SHADOW_WIDTH 2048
 
 namespace pr {
     DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) : direction(direction), ambient(ambient), diffuse(diffuse), specular(specular) {
@@ -41,7 +41,7 @@ namespace pr {
         u = name + "lightMatrix";
         shader.setUniform(u.c_str(), lightMatrix);
     }
-    void DirectionalLight::generateShadows(Shader &shader, unsigned int depthMapFrameBuffer, glm::vec3 cameraLocation) {
+    void DirectionalLight::generateShadows(Shader &shader, unsigned int depthMapFrameBuffer, glm::vec3 cameraLocation, glm::vec3 cameraDirection) {
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFrameBuffer);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMapTexture, 0);
         glDrawBuffer(GL_NONE);
@@ -49,13 +49,18 @@ namespace pr {
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glClear(GL_DEPTH_BUFFER_BIT);
         float d = glm::length(direction);
-        glm::mat4 P = glm::ortho(-10.0f, 20.0f, -20.0f, 20.0f, d-10.0f, d+10.0f);
+        glm::mat4 P = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, d-50.0f, d+50.0f);
         glm::mat4 V;
+        glm::vec3 eye, center, nose;
+        center = cameraLocation+normalize(cameraDirection)*50.0f;
+        eye = center+direction;
+        center = cameraLocation;
         if(abs(direction[0]) < 0.01 && abs(direction[1]) < 0.01) {
-            V = glm::lookAt(cameraLocation+direction, cameraLocation, glm::vec3(1,0,0));
+            nose = glm::vec3(1,0,0);
         } else {
-            V = glm::lookAt(cameraLocation+direction, cameraLocation, glm::vec3(0,0,1));
+            nose = glm::vec3(0,0,1);
         }
+        V = glm::lookAt(cameraLocation+direction, cameraLocation, nose);
         lightMatrix = P*V;
         shader.use();
         shader.setUniform("lightMatrix", lightMatrix);

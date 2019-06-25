@@ -210,7 +210,7 @@ namespace pr {
         int numberOfDirectionalLights = min(( int ) directionalLights.size(), 4 );
 
         for( int i = 0; i < numberOfDirectionalLights; i++ ) {
-            directionalLights[i].generateShadows( shadowShader, depthMapFrameBuffer, currentCamera->position.pos );
+            directionalLights[i].generateShadows( shadowShader, depthMapFrameBuffer, currentCamera->position.pos, currentCamera->dir);
             renderScene( shadowShader );
         }
         eyeLight.generateShadows( shadowShader, depthMapFrameBuffer, *currentCamera );
