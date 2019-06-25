@@ -1,4 +1,5 @@
 #include <limits>
+#include <cmath>
 #include "basic_entities.hpp"
 #include "good_random.hpp"
 
@@ -108,6 +109,7 @@ std::function< float( float ) > pr::sinTransition( float expiration, float power
 std::function< float( float ) > pr::cosTransition( float expiration, float power ) {
     return
             [ = ]( float time ) -> float {
+                std::cout<<pow( cos( time*M_PI/2/expiration ), power)<<std::endl;
                 return time < expiration ? pow( cos( time*M_PI/2/expiration ), power ) : 0;
             };
 }
@@ -139,5 +141,6 @@ bool pr::Particle::update( float time ) {
     position = translation( timeAcc );
     rot2d = rotation( timeAcc );
     alpha = fade( timeAcc );
+    scale = scaling( timeAcc );
     return approx( alpha, 0 );
 }

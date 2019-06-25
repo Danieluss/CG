@@ -64,6 +64,7 @@ namespace pr {
         glm::vec3 position;
         std::function< float( float ) > fade = linearTransition( 10, 1, 0 );
         std::function< glm::vec3( float ) > translation = constTranslation( {0, 0, 0} );
+        std::function< glm::vec3( float ) > scaling = constTranslation( {1, 1, 1} );
         std::function< float( float ) > rotation = constTransition( 0, 0 );
         Texture *texture;
 

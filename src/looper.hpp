@@ -13,6 +13,8 @@
 #include "graphics/modeling/texture.hpp"
 #include "entities/camera.hpp"
 #include "graphics/directional_light.hpp"
+#include "time_effect.hpp"
+#include "good_random.hpp"
 
 #define COLLISION_TEX_SIZE 32
 #define COLLISION_VIEW_SIZE 4.0
@@ -34,6 +36,8 @@ namespace pr {
         double framesTime = 0;
         double recentTime = 0;
         double updateTime = 0;
+        long particleId = 0;
+        long effectId = 0;
         Shader shader;
         Shader shadowShader;
         Shader skyboxShader;
@@ -43,6 +47,7 @@ namespace pr {
         std::unordered_map< std::string, Texture > textures;
         std::unordered_map< std::string, Entity > entities;
         std::unordered_map< std::string, Particle > particles;
+        std::unordered_map< std::string, TimeEffect > effects;
         EyeLight eyeLight;
         std::vector< DirectionalLight > directionalLights;
         unsigned int depthMapFrameBuffer;
@@ -79,6 +84,12 @@ namespace pr {
         float maxv=0.0;
 
     public:
+
+        Camera* getUFOCamera();
+
+        void sparkingEffect();
+
+        void boomEffect();
 
         Looper( Window &window );
 
