@@ -534,10 +534,21 @@ namespace pr {
         entities["player_ufo"].translate( {0, 0, -4.5} );
         entities["chalice2"].setParent( entities["chalice1"] );
         entities["player_ufo"].setParent( *currentCamera );
+
+        models["building001"] = Model("Residential Buildings 003");
+        entities["building"] = (Entity(models["building001"]));
+        entities["building"].rotateD(90, X);
+        entities["building"].translate(glm::vec3(20, 20, 0));
+        entities["building1"] = (Entity(models["building001"]));
+        entities["building1"].rotateD(90, X);
+        entities["building1"].translate(glm::vec3(-20, 20, 0));
+        entities["building2"] = (Entity(models["building001"]));
+        entities["building2"].rotateD(90, X);
+        entities["building2"].translate(glm::vec3(50, 20, 0));
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
-        directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
-                                                       glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
+        // directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
+        //                                                glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         recentTime = glfwGetTime();
         initCollisions();
 //        sparkingEffect();
@@ -594,7 +605,7 @@ namespace pr {
         events.push_back( {
             8, [ & ]() -> void {
                 glm::vec3 pos = getUFOCamera()->position.pos;
-                getUFOCamera()->locked = true;
+                // getUFOCamera()->locked = true;
                 std::string id = std::to_string( particleId++ );
                 particles[id].texture = &textures["blueboom"];
                 particles[id].scaling = acceleratedTranslation( {1, 1, 1}, {50, 50, 50}, {5, 5, 5} );
