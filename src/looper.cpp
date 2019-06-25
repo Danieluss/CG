@@ -681,7 +681,7 @@ namespace pr {
         glm::vec3 pos = rngVec() * glm::vec3{ 4.f, 4.f, -0.5f} - glm::vec3{2, 2, 0};
         pos += getUFOCamera()->position.pos;
         auto scaling = linearTranslation( {1, 1, 1}, {5, 5, 5} );
-        auto translation = acceleratedTranslation( pos, {2 * rn - 1, 2 * rn - 1, 5}, {0, 0, -10} );
+        auto translation = acceleratedTranslation( pos + glm::vec3{ 4*rn - 2, 4*rn - 2, -1.5 }, {2 * rn - 1, 2 * rn - 1, 3}, {0, 0, -10} );
         auto fade = cosTransition( 3, 0.8 );
         auto rotation = constTransition( 3, 0 );
         std::string id = std::to_string( particleId++ );
