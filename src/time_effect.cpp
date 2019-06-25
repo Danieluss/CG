@@ -2,9 +2,9 @@
 #include <iostream>
 
 bool pr::TimeEffect::play( double time ) {
-
-    for( auto& it = this->it; it != events.end() && it->first < time - refTime; ++it ) {
+    for( auto it = this->it; it != events.end() && it->first < time - refTime; ++it ) {
         it->second();
+        ++this->it;
     }
     return it == events.end();
 }

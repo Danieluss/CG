@@ -7,11 +7,11 @@
 #include <time_effect.hpp>
 #include "looper.hpp"
 #include "good_random.hpp"
-
 #include "graphics/modeling/myCube.h"
 #include "looper.hpp"
-
 #include<iostream>
+
+#define rn GoodRandom::rng.get()
 
 using namespace std;
 
@@ -20,7 +20,7 @@ namespace pr {
     inline glm::vec3 rngVec() {
         glm::vec3 vec;
         for( int i = 0; i < 2; i++ ) {
-            vec[i] = GoodRandom::rng.get();
+            vec[i] = rn;
         }
         return vec;
     }
@@ -289,18 +289,22 @@ namespace pr {
         ufoCamera.position.update( deltaTime );
         thirdPersonCamera.position.update( deltaTime );
         entities["player_ufo"].rotateD( deltaTime*50, Z );
-        entities["player_ufo"].pos = {0, 0, -4.5 + 0.2*sin( updateTime*2 )};
+        entities["player_ufo"].pos = {0, 0, -4.5 + 0.06*sin( updateTime*2 )};
         glm::vec3 dm;
         if( detectCollision( dm )) {
+            if( !exploding && getUFOCamera()->position.inertia > 1 ) {
+                exploding = true;
+                collisionEffect();
+            }
             if( currentCamera == &thirdPersonCamera ) {
                 thirdPersonCamera.position.pos += dm*3.f;
                 thirdPersonCamera.position.inertiaDir = glm::reflect( thirdPersonCamera.position.inertiaDir,
                                                                       glm::normalize( dm ));
-                thirdPersonCamera.position.inertia *= 0.5;
+                thirdPersonCamera.position.inertia *= 0.6;
             } else {
                 ufoCamera.position.pos += dm*3.f;
                 ufoCamera.position.inertiaDir = glm::reflect( ufoCamera.position.inertiaDir, glm::normalize( dm ));
-                thirdPersonCamera.position.inertia *= 0.5;
+                thirdPersonCamera.position.inertia *= 0.6;
             }
         }
 
@@ -540,70 +544,90 @@ namespace pr {
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         recentTime = glfwGetTime();
         initCollisions();
-//        sparkingEffect();
-        boomEffect();
+//        glm::vec3 x = glm::vec3(0.f, 1.f, 0.f);
+//        touchEffect(x);
+    }
+
+    void Looper::collisionEffect() {
+        std::vector< std::pair<double, std::function<void()>> > events;
+        events.push_back( {
+            0.1, [ & ]() -> void {
+                touchEffect();
+            }
+        } );
+        events.push_back( {
+            0.5, [ & ]() -> void {
+                sparkingEffect();
+            }
+        } );
+        events.push_back( {
+            2, [ & ]() -> void {
+                smokeEffect();
+            }
+        } );
+        events.push_back( {
+            4, [ & ]() -> void {
+                boomEffect();
+            }
+        } );
+        effects[std::to_string( effectId )].setEvents( events );
+        effects[std::to_string( effectId++ )].relative( updateTime );
     }
 
     void Looper::sparkingEffect() {
         std::vector< std::pair<double, std::function<void()>> > events;
-        for( int i = 0; i < 10; i++ ) {
+        for( int i = 0; i < 20; i++ ) {
             events.push_back( {
-                i*0.5, [ & ]() -> void {
-                    glm::vec3 pos = rngVec() * -0.2f;
-                    pos += getUFOCamera()->position.pos;
-                    auto scaling = linearTranslation( {10, 10, 10}, {5, 5, 5} );
-                    auto translation = acceleratedTranslation( pos, {2 * GoodRandom::rng.get() - 1, 2 * GoodRandom::rng.get() - 1, 5}, {0, 0, -10} );
-                    auto fade = cosTransition( 3, 0.8 );
-                    auto rotation = constTransition( 3, 0 );
-                    std::string id = std::to_string( particleId++ );
-                    particles[id].texture = &textures["sparks"];
-                    particles[id].scaling = scaling;
-                    particles[id].translation = translation;
-                    particles[id].rotation = rotation;
-                    particles[id].fade = fade;
+                i * 0.5, [ & ]() -> void {
+                    sparksParticle();
                 }
             } );
         }
-        effects[std::to_string( effectId++ )].setEvents( events );
+        effects[std::to_string( effectId )].setEvents( events );
         effects[std::to_string( effectId++ )].relative( updateTime );
     }
 
     void Looper::boomEffect() {
         std::vector< std::pair<double, std::function<void()>> > events;
-        for( int i = 0; i < 40; i++ ) {
+        for( int i = 0; i < 100; i++ ) {
             events.push_back( {
-                i * 0.15, [ & ]() -> void {
-                    glm::vec3 pos = getUFOCamera()->position.pos;
-                    std::string id = std::to_string( particleId++ );
-                    if( GoodRandom::rng.get() < 0.5 ) {
-                        particles[id].texture = &textures["greenboom"];
-                    } else {
-                        particles[id].texture = &textures["boomboom"];
-                    }
-                    particles[id].scaling = acceleratedTranslation( glm::vec3{1, 1, 1} * (float) GoodRandom::rng.get() * 3.f, {0.5, 0.5, 0.5}, {-0.1, -0.1, -0.1} );
-                    glm::vec3 tpos = (glm::vec3{ 6 * GoodRandom::rng.get() - 3, 6 * GoodRandom::rng.get() - 3, GoodRandom::rng.get() * -2.f - 1} + pos);
-                    glm::vec3 vel = (rngVec() * -0.05f + 0.025f);
-                    glm::vec3 acc = (rngVec() * -0.05f + 0.025f);
-                    particles[id].translation = acceleratedTranslation( tpos, vel, acc);
-//                    particles[id].translation = acceleratedTranslation( pos, rngVec()*0.2f - 0.1f, rngVec()*0.2f - 0.1f);
-                    particles[id].rotation = linearTransition( 1, ( GoodRandom::rng.get() - 0.5 )*180, ( GoodRandom::rng.get() - 0.5 )*180 );
-                    particles[id].fade = sinTransition( 1, 0.8 );
+                i * 0.06, [ & ]() -> void {
+                    boomParticle();
                 }
             } );
         }
         events.push_back( {
-            8, [ & ]() -> void {
-                glm::vec3 pos = getUFOCamera()->position.pos;
-                getUFOCamera()->locked = true;
-                std::string id = std::to_string( particleId++ );
-                particles[id].texture = &textures["blueboom"];
-                particles[id].scaling = acceleratedTranslation( {1, 1, 1}, {50, 50, 50}, {5, 5, 5} );
-                particles[id].translation = constTranslation( pos - glm::vec3{0, 0, 1.5} );
-                particles[id].rotation = linearTransition( 5, ( GoodRandom::rng.get() - 0.5 )*180, ( GoodRandom::rng.get() - 0.5 )*180 );
-                particles[id].fade = sinTransition( 5, 0.8 );
+            0, [ & ]() -> void {
+                exploding = false;
             }
         } );
-        effects[std::to_string( effectId++ )].setEvents( events );
+        effects[std::to_string( effectId )].setEvents( events );
+        effects[std::to_string( effectId++ )].relative( updateTime );
+    }
+
+    void Looper::touchEffect() {
+        std::vector< std::pair<double, std::function<void()>> > events;
+        events.push_back( {
+            0, [ & ]() -> void {
+                electricalParticle();
+                electricalParticle();
+            }
+        } );
+        effects[std::to_string( effectId )].setEvents( events );
+        effects[std::to_string( effectId++ )].relative( updateTime );
+    }
+
+    void Looper::smokeEffect() {
+        std::vector< std::pair<double, std::function<void()>> > events;
+        for( int i = 0; i < 300; i++ ) {
+            events.push_back( {
+                i * 0.1, [ & ]() -> void {
+                    smokeParticle();
+                    smokeParticle();
+                }
+            } );
+        }
+        effects[std::to_string( effectId )].setEvents( events );
         effects[std::to_string( effectId++ )].relative( updateTime );
     }
 
@@ -615,4 +639,59 @@ namespace pr {
         else
             return previousCamera;
     }
+
+    void Looper::smokeParticle() {
+        glm::vec3 pos = getUFOCamera()->position.pos;
+        std::string id = std::to_string( particleId++ );
+        particles[id].texture = &textures["greenboom"];
+        particles[id].scaling = acceleratedTranslation( glm::vec3{1, 1, 1}, {1.5, 1.5, 1.5}, {-0.1, -0.1, -0.1} );
+        glm::vec3 tpos = (pos + glm::vec3{rn*5 - 2.5, rn*5 - 2.5, -2});
+        glm::vec3 vel = {0, 0, 2};
+        glm::vec3 acc = {0, 0, -0.1};
+        particles[id].translation = acceleratedTranslation( tpos, vel, acc);
+//                    particles[id].translation = acceleratedTranslation( pos, rngVec()*0.2f - 0.1f, rngVec()*0.2f - 0.1f);
+        particles[id].rotation = linearTransition( 2, ( rn - 0.5 )*180, ( rn - 0.5 )*180 );
+        particles[id].fade = cosTransition( 2, 0.3 );
+    }
+
+    void Looper::electricalParticle() {
+        glm::vec3 pos = getUFOCamera()->position.pos;
+        std::string id = std::to_string( particleId++ );
+        particles[id].texture = &textures["blueboom"];
+        particles[id].scaling = acceleratedTranslation( glm::vec3{1, 1, 1}, {1, 1, 1}, {500, 500, 500} );
+        particles[id].translation = constTranslation( pos + glm::vec3{0, 0, -2} );
+//                    particles[id].translation = acceleratedTranslation( pos, rngVec()*0.2f - 0.1f, rngVec()*0.2f - 0.1f);
+        particles[id].rotation = linearTransition( 0.5, ( rn - 0.5 )*180, ( rn - 0.5 )*180 );
+        particles[id].fade = linearTransition( 0.5, 0.5, 0 );
+    }
+
+    void Looper::sparksParticle() {
+        glm::vec3 pos = rngVec() * glm::vec3{ 4.f, 4.f, -0.5f} - glm::vec3{2, 2, 0};
+        pos += getUFOCamera()->position.pos;
+        auto scaling = linearTranslation( {1, 1, 1}, {5, 5, 5} );
+        auto translation = acceleratedTranslation( pos, {2 * rn - 1, 2 * rn - 1, 5}, {0, 0, -10} );
+        auto fade = cosTransition( 3, 0.8 );
+        auto rotation = constTransition( 3, 0 );
+        std::string id = std::to_string( particleId++ );
+        particles[id].texture = &textures["sparks"];
+        particles[id].scaling = scaling;
+        particles[id].translation = translation;
+        particles[id].rotation = rotation;
+        particles[id].fade = fade;
+    }
+
+    void Looper::boomParticle() {
+        glm::vec3 pos = getUFOCamera()->position.pos;
+        std::string id = std::to_string( particleId++ );
+        particles[id].texture = &textures["boomboom"];
+        particles[id].scaling = acceleratedTranslation( glm::vec3{1, 1, 1}  * (float) rn * 2.f  + 0.2f, {20, 20, 20}, {-100, -100, -100} );
+        glm::vec3 tpos = (glm::vec3{ 5 * rn - 2.5, 5 * rn - 2.5, rn * -1.f - 1.5} + pos);
+        glm::vec3 vel = (rngVec() * -0.05f + 0.025f);
+        glm::vec3 acc = (rngVec() * -0.05f + 0.025f);
+        particles[id].translation = acceleratedTranslation( tpos, vel, acc);
+//                    particles[id].translation = acceleratedTranslation( pos, rngVec()*0.2f - 0.1f, rngVec()*0.2f - 0.1f);
+        particles[id].rotation = linearTransition( 0.2, ( rn - 0.5 )*5, ( rn - 0.5 )*5 );
+        particles[id].fade = sinTransition( 0.2, 0.3 );
+    }
+
 }

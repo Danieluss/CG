@@ -38,6 +38,7 @@ namespace pr {
         double updateTime = 0;
         long particleId = 0;
         long effectId = 0;
+        bool exploding = false;
         Shader shader;
         Shader shadowShader;
         Shader skyboxShader;
@@ -83,13 +84,28 @@ namespace pr {
 
         float maxv=0.0;
 
-    public:
+        void smokeParticle();
 
-        Camera* getUFOCamera();
+        void electricalParticle();
+
+        void sparksParticle();
+
+        void boomParticle();
+
+
+        void collisionEffect();
+
+        void smokeEffect();
+
+        void touchEffect();
 
         void sparkingEffect();
 
         void boomEffect();
+
+    public:
+
+        Camera* getUFOCamera();
 
         Looper( Window &window );
 

@@ -20,7 +20,6 @@ namespace pr {
 
         std::vector< std::pair<double, std::function<void()>> > events;
         double refTime = -1;
-        double recentTime = 0;
         std::vector< std::pair<double, std::function<void()>> >::iterator it;
 
     };

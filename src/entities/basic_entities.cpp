@@ -109,7 +109,6 @@ std::function< float( float ) > pr::sinTransition( float expiration, float power
 std::function< float( float ) > pr::cosTransition( float expiration, float power ) {
     return
             [ = ]( float time ) -> float {
-                std::cout<<pow( cos( time*M_PI/2/expiration ), power)<<std::endl;
                 return time < expiration ? pow( cos( time*M_PI/2/expiration ), power ) : 0;
             };
 }
