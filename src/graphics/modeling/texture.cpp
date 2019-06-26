@@ -24,10 +24,6 @@ namespace pr {
         filename = "res/textures/" + filename;
         glGenTextures( 1, &id );
         glBindTexture( GL_TEXTURE_2D, id );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
         int width, height, noChannels;
         unsigned char *data = stbi_load( filename.c_str(), &width, &height, &noChannels, 0 );
         if( data ) {
@@ -44,12 +40,10 @@ namespace pr {
             glBindTexture( GL_TEXTURE_2D, id );
             std::cout<<filename<<std::endl;
             if( approx( log2( width ), round( log2( width ) ) ) ) {
-                std::cout<<"A"<<std::endl;
                 glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data );
                 this->width = width;
                 this->height = height;
             } else {
-                std::cout<<"B"<<std::endl;
                 glTexImage2D( GL_TEXTURE_2D, 0, format, width - 1, height - 1, 0, format, GL_UNSIGNED_BYTE, data );
                 this->width = width - 1;
                 this->height = height - 1;
@@ -57,6 +51,11 @@ namespace pr {
         } else {
             throw ( "Error while loading texture" );
         }
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free( data );
     }
 

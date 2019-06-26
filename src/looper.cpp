@@ -8,10 +8,11 @@
 #include "looper.hpp"
 #include "good_random.hpp"
 #include <set>
-
+#include "graphics/modeling/chunk.hpp"
 #include "graphics/modeling/myCube.h"
 #include "looper.hpp"
-#include<iostream>
+#include "utilities.hpp"
+#include <iostream>
 
 #define rn GoodRandom::rng.get()
 
@@ -233,7 +234,9 @@ namespace pr {
         for( int i = 0; i < directionalLights.size(); i++ ) {
             directionalLights[i].addToScene( shader, i );
         }
+        glEnable(GL_MULTISAMPLE);
         renderScene( shader );
+        glDisable(GL_MULTISAMPLE);
         skyboxShader.use();
         skyboxShader.setUniform( "P", P );
         skyboxShader.setUniform( "V", V );

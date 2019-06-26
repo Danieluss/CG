@@ -42,6 +42,7 @@ using namespace pr;
 
 int main() {
     try {
+        glfwWindowHint(GLFW_SAMPLES, 2);
         Window::init();
         Window window;
         GLenum err;
