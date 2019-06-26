@@ -22,6 +22,7 @@ pr::Model *pr::Entity::getModel() const {
 
 glm::mat4 pr::Entity::modelMatrix() const {
     glm::mat4 Mtmp = M;
+    // std::cout << this << " " << parent << std::endl;
     if( parent != nullptr ) {
         Mtmp = M*parent->modelMatrix();
     }

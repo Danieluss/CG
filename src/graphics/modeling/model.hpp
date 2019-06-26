@@ -51,6 +51,8 @@ namespace pr {
 
         static Model fromFile( const std::string &filename );
 
+        void multiplyVertices(glm::vec3 pos, glm::vec2 uv);
+
     private:
 
         static std::unordered_map< std::string, Texture > texturesLoaded;

@@ -31,6 +31,7 @@ namespace pr {
 
         void draw( Shader& shader );
 
+        void multiplyVertices(glm::vec3 pos, glm::vec2 uv);
 
     };
 

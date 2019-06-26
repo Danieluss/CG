@@ -7,6 +7,7 @@
 #include <vector>
 #include "entities/basic_entities.hpp"
 #include "graphics/modeling/model.hpp"
+#include "graphics/modeling/chunk.hpp"
 #include "window.hpp"
 #include "graphics/shaders/shader.hpp"
 #include "graphics/shaders/shader.hpp"
@@ -15,6 +16,7 @@
 #include "graphics/directional_light.hpp"
 #include "time_effect.hpp"
 #include "good_random.hpp"
+#include "utilities.hpp"
 
 #define COLLISION_TEX_SIZE 32
 #define COLLISION_VIEW_SIZE 4.0
@@ -46,6 +48,7 @@ namespace pr {
         std::unordered_map< std::string, Model > models;
         std::unordered_map< std::string, Texture > textures;
         std::unordered_map< std::string, Entity > entities;
+        std::unordered_map< std::pair<int, int>, Chunk, pair_hash> chunks;
         std::unordered_map< std::string, Particle > particles;
         std::unordered_map< std::string, TimeEffect > effects;
         EyeLight eyeLight;
@@ -64,6 +67,8 @@ namespace pr {
         void drawCube( Shader &shader, glm::mat4 );
 
         void updateScene();
+
+        void renderChunks( Shader &shader );
 
         void renderScene( Shader &shader, bool playerUfoVisible=true);
 

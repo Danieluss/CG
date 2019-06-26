@@ -7,6 +7,7 @@
 #include <time_effect.hpp>
 #include "looper.hpp"
 #include "good_random.hpp"
+#include <set>
 
 #include "graphics/modeling/myCube.h"
 #include "looper.hpp"
@@ -49,37 +50,9 @@ namespace pr {
 
     void Looper::renderScene( Shader &shader, bool playerUfoVisible ) {
         glm::mat4 M = glm::mat4( 1.0 );
-//        M = glm::scale( M, {100, 100, 100} );
-//        shader.setUniform( "M", M );
-//        textures["sky_map"].activate( 0 );
-//        models["cube"].draw( shader );
-//        float angle = 0.0*M_PI/180.0;
-//        M = glm::rotate( M, angle, glm::vec3( 1, 0, 0 ));
-//        shader.setUniform( "M", M );
         glm::mat4 M1;
-//
-//        M1 = glm::translate( M, glm::vec3( 0, 0, 0 ));
-//        M1 = glm::rotate( M1, static_cast<float>( -30/180.f*M_PI ), glm::vec3( 0, 1, 0 ) );
-//        textures["bricks"].activate( 0 );
-//        drawCube( shader, M1 );
-//
-//        for( int i = 0; i < 10; i++ ) {
-//            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
-//            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
-//            M1 = tr*rot*M1;
-//        }
-//        for( int i = 0; i < 10; i++ ) {
-//            glm::mat4 tr = glm::translate( glm::mat4(1), glm::vec3( 5, 0, 0 ) );
-//            glm::mat4 rot = glm::rotate( glm::mat4(1), static_cast<float>( -30.f/180.f*M_PI ), glm::vec3( 0, 1, 0 ));
-//            M1 = inverse( tr * rot ) * M1;
-//            textures["bricks"].activate( 0 );
-//            drawCube( shader, M1 );
-//        }
-//
         M1 = glm::scale( M, glm::vec3( 10.0f, 10.0f, 0.2f ));
         textures["metal"].activate( 0 );
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, collisionTexture);
         drawCube( shader, M1 );
 
         for( const auto &strEntityPair : entities ) {
@@ -89,6 +62,35 @@ namespace pr {
             strEntityPair.second.draw( shader );
         }
 
+        renderChunks(shader);
+    }
+
+    void Looper::renderChunks( Shader &shader ) {
+        glm::vec3 pos = currentCamera->position.pos;
+        int x = floor(pos.x/Chunk::chunkSize);
+        int y = floor(pos.y/Chunk::chunkSize);
+        glm::vec3 dir = currentCamera->dir;
+        std::set<std::pair<int, int>> skipped;
+        skipped.insert({-sgn(dir.x), -sgn(dir.y)});
+
+        for(int i=-2; i <= 2; i++) {
+            for(int j=-2; j <= 2; j++) {
+                if(abs(i) > 0 && abs(j) > 0 && skipped.count({sgn(i), sgn(j)})) {
+                    continue;
+                }
+                int nx = x+i;
+                int ny = y+j;
+                if(chunks.count({nx, ny}) == 0) {
+                    chunks[{nx, ny}] = Chunk(models, 0, nx, ny);
+                    chunks[{nx, ny}].setParents();
+                }
+                if(abs(i) > 1 || abs(j) > 1) {
+                    chunks[{nx, ny}].drawBasic(shader);
+                } else {
+                    chunks[{nx, ny}].draw(shader);
+                }
+            }
+        }
     }
 
     Looper::Looper( Window &window ) : window( window ),
@@ -535,20 +537,28 @@ namespace pr {
         entities["chalice2"].setParent( entities["chalice1"] );
         entities["player_ufo"].setParent( *currentCamera );
 
-        models["building001"] = Model("Residential Buildings 003");
-        entities["building"] = (Entity(models["building001"]));
-        entities["building"].rotateD(90, X);
-        entities["building"].translate(glm::vec3(20, 20, 0));
-        entities["building1"] = (Entity(models["building001"]));
-        entities["building1"].rotateD(90, X);
-        entities["building1"].translate(glm::vec3(-20, 20, 0));
-        entities["building2"] = (Entity(models["building001"]));
-        entities["building2"].rotateD(90, X);
-        entities["building2"].translate(glm::vec3(50, 20, 0));
+        models["grass"] = Model("grass");
+        models["grass"].multiplyVertices({72.0, 72.0, 0.5}, {10.0, 10.0});
+
+        models["road1"] = Model("road");
+        models["road1"].multiplyVertices({90.0, 6.0, 0.5}, {15.0, 1.0});
+        models["road2"] = Model("road");
+        models["road2"].multiplyVertices({6.0, 90.0, 0.5}, {1.0, 15.0});
+
+        models["pavement1"] = Model("pavement");
+        models["pavement1"].multiplyVertices({78.0, 3.0, 0.5}, {26.0, 1.0});
+        models["pavement2"] = Model("pavement");
+        models["pavement2"].multiplyVertices({3.0, 78.0, 0.5}, {1.0, 26.0});
+
+        models["building1"] = Model("Residential Buildings 001");
+        models["building2"] = Model("Residential Buildings 002");
+        models["building3"] = Model("Residential Buildings 003");
+        models["building4"] = Model("Residential Buildings 004");
+
         directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
                                                        glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
-        // directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
-        //                                                glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
+        directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
+                                                       glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
         recentTime = glfwGetTime();
         initCollisions();
 //        sparkingEffect();

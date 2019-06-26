@@ -113,6 +113,12 @@ pr::Model::loadTextures( pr::Mesh &mesh, aiMaterial *material, const aiTextureTy
     }
 }
 
+void pr::Model::multiplyVertices(glm::vec3 pos, glm::vec2 uv) {
+    for( int i = 0; i < meshes.size(); i++ ) {
+        meshes[i].multiplyVertices(pos, uv);
+    }
+}
+
 pr::Model::Model() {
 
 }
