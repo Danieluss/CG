@@ -81,7 +81,7 @@ namespace pr {
                 int nx = x+i;
                 int ny = y+j;
                 if(chunks.count({nx, ny}) == 0) {
-                    chunks[{nx, ny}] = Chunk(models, 0, nx, ny);
+                    chunks[{nx, ny}] = Chunk(models, 1, nx, ny);
                     chunks[{nx, ny}].setParents();
                 }
                 if(abs(i) > 1 || abs(j) > 1) {

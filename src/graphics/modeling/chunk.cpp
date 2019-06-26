@@ -1,6 +1,7 @@
 #include"chunk.hpp"
 
 #include<iostream>
+#include"good_random.hpp"
 
 namespace pr {
     struct chunkEntity {
@@ -26,6 +27,10 @@ pr::Chunk::Chunk(std::unordered_map< std::string, Model > &models, int _type, in
         data = {
             "building1", "building2", "building3", "building4"
         };
+    } else {
+        for(int i=0; i < 4; i++) {
+            data.push_back("building" + std::to_string(rand()%4+1));
+        }
     }
     for(int i=0; i < (int)positions.size(); i++) {
         Entity e = Entity(models[data[i]]);
