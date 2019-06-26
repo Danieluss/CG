@@ -16,7 +16,7 @@ namespace pr {
         glBindTexture(GL_TEXTURE_2D, depthMapTexture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        float borderColor[] = {1.0f, 1.0f, 1.0f};
+        float borderColor[] = {0.0f, 0.0f, 0.0f};
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);  
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -49,7 +49,7 @@ namespace pr {
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glClear(GL_DEPTH_BUFFER_BIT);
         float d = glm::length(direction);
-        glm::mat4 P = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, d-50.0f, d+50.0f);
+        glm::mat4 P = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, d-100.0f, d+100.0f);
         glm::mat4 V;
         glm::vec3 eye, center, nose;
         center = cameraLocation+normalize(cameraDirection)*50.0f;

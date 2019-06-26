@@ -543,6 +543,7 @@ namespace pr {
         entities["ufo1"].addInertia( {0, 0, 1}, 0.1, 1 );
         entities["ufo1"].rotateD( 90, X );
         entities["ufo1"].scale( {0.1, 0.1, 0.1} );
+        entities["ufo1"].translate({0.0, 0.0, 2.0});
         entities["chalice2"] = Entity( models["chalice"] );
         entities["chalice2"].translate( {2, 0, 0} );
         entities["chalice2"].rotateD( -90, Z );

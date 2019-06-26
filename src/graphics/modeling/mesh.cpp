@@ -77,7 +77,6 @@ pr::Mesh::Mesh() {
 void pr::Mesh::multiplyVertices(glm::vec3 pos, glm::vec2 uv) {
     for(Vertex &v : vertices) {
         v.position*=pos;
-        cout << endl;
         v.uv*=uv;
     }
     updateArrays();
