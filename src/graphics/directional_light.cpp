@@ -65,4 +65,18 @@ namespace pr {
         shader.use();
         shader.setUniform("lightMatrix", lightMatrix);
     }
+
+    void DirectionalLight::addObject(Model &model) {
+        sunEntity = Entity(model);
+        float angle = -atan2(glm::length(glm::vec3(0,0,direction.z)), glm::length(glm::vec3(direction.x, direction.y, 0)));
+        sunEntity.rotate(angle, Y);
+        angle = atan2(direction.y, direction.x);
+        sunEntity.rotate(angle, Z);
+    }
+    void DirectionalLight::draw(Shader &shader, Positionable position) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        sunEntity.pos = position.pos+10.f*direction;
+        sunEntity.draw(shader);
+    }
 }

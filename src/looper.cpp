@@ -104,7 +104,9 @@ namespace pr {
                                        collisionShader( "v_collision.glsl",
                                                         "f_collision.glsl" ),
                                        particleShader( "v_particle.glsl",
-                                                       "f_particle.glsl" ) {
+                                                       "f_particle.glsl" ),
+                                        sunShader("v_sun.glsl", "f_sun.glsl")               
+                                                                        {
         initListeners();
         initScene();
     }
@@ -248,6 +250,12 @@ namespace pr {
                                    glm::vec3( 1, 0, 0 ));
         skyboxShader.setUniform( "M", M );
         renderSkybox();
+        sunShader.use();
+        sunShader.setUniform("P", P);
+        sunShader.setUniform("V", V);
+        for(int i=0; i < directionalLights.size(); i++) {
+            directionalLights[i].draw(sunShader, currentCamera->position);
+        }
         particleShader.use();
         eyeLight.addToScene( particleShader, 1 );
         particleShader.setUniform( "P", P );
@@ -563,10 +571,15 @@ namespace pr {
         models["building3"] = Model("Residential Buildings 003");
         models["building4"] = Model("Residential Buildings 004");
 
-        directionalLights.push_back( DirectionalLight( glm::vec3( -10.0, 10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
-                                                       glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
-        directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 20.0 ), glm::vec3( 0.3, 0.3, 0.3 ),
-                                                       glm::vec3( 0.5, 0.5, 0.5 ), glm::vec3( 1.0, 1.0, 1.0 )));
+        models["sun"] = Model("sun");
+        models["sun"].multiplyVertices({20.0, 20.0, 20.0}, {1.0, 1.0});
+
+        directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, 10.0, 10.0 ), glm::vec3( 0.2, 0.2, 0.2 ),
+                                                       glm::vec3( 0.4, 0.4, 0.4 ), glm::vec3( 1.0, 1.0, 1.0 )));
+        directionalLights.push_back( DirectionalLight( glm::vec3( 10.0, -10.0, 10.0 ), glm::vec3( 0.2, 0.2, 0.2 ),
+                                                       glm::vec3( 0.4, 0.4, 0.4 ), glm::vec3( 1.0, 1.0, 1.0 )));
+        directionalLights[0].addObject(models["sun"]);
+        directionalLights[1].addObject(models["sun"]);
         recentTime = glfwGetTime();
         initCollisions();
 //        glm::vec3 x = glm::vec3(0.f, 1.f, 0.f);
