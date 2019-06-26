@@ -23,7 +23,7 @@ void pr::Mesh::updateArrays() {
             tangents.push_back(v.tangent[i]);
         }
         texcoords.push_back(v.uv[0]);
-        texcoords.push_back(1.0-v.uv[1]);
+        texcoords.push_back(v.uv[1]);
     }
 }
 
@@ -70,6 +70,17 @@ void pr::Mesh::draw( pr::Shader &shader ) {
 }
 
 pr::Mesh::Mesh() {
+}
+
+#define deb( A ) cout << A[0] << " " << A[1] << " " << A[2] << "\n"
+
+void pr::Mesh::multiplyVertices(glm::vec3 pos, glm::vec2 uv) {
+    for(Vertex &v : vertices) {
+        v.position*=pos;
+        cout << endl;
+        v.uv*=uv;
+    }
+    updateArrays();
 }
 
 #undef ENUM_STRINGS

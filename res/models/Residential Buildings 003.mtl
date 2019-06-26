@@ -10,9 +10,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd oldBricks/diffuse.jpg
-map_Ka oldBricks/diffuse.jpg
-bump oldBricks/normal.jpg
+map_Ka plaster/diffuse.jpg
+map_Kd plaster/diffuse.jpg
+map_Ks plaster/specular.jpg
+map_Bump plaster/normal.jpg
 
 
 newmtl hotel_glas
