@@ -82,7 +82,7 @@ void main(void) {
         kd = material.vdiffuse;
     }
     if(material.vspecular.x < 0) {
-        ks = texture(material.specular, texCoord).xyz;
+        ks = texture(material.specular, texCoord).xxx;
     } else {
         ks = material.vspecular;
     }
