@@ -894,7 +894,7 @@ INPUT_FILTER           =
 # filter if there is a match. The filters are a list of the form: pattern=filter
 # (like *.cpp=my_cpp_filter). See INPUT_FILTER for further information on how
 # filters are used. If the FILTER_PATTERNS tag is empty or if none of the
-# patterns match the file name, INPUT_FILTER is applied.
+# patterns triggered the file name, INPUT_FILTER is applied.
 
 FILTER_PATTERNS        = 
 

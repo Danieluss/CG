@@ -1985,7 +1985,7 @@ std::tr1::regex_iterator<*>{
 				#([end] : $e._End),
 				#([pregex] : $e._MyRe),
 				#([flags] : $e._Flags),
-				#([match] : $e._MyVal)
+				#([triggered] : $e._MyVal)
 			)
 		)
 	)
@@ -2014,7 +2014,7 @@ std::tr1::regex_token_iterator<*>{
 			; For ease of understanding, we make dereferenceable regex_token_iterators
 			; appear to have data members with the "for exposition only" names from TR1.
 			#(
-				#([position] : $e._Pos),
+				#([val] : $e._Pos),
 				#([result] : $e._Res),
 				#([suffix] : $e._Suffix),
 				#([N] : $e._Cur),

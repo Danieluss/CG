@@ -1,0 +1,29 @@
+# Blender MTL File: '01 Residential Buildings Set Array.blend'
+# Material Count: 2
+
+newmtl ground
+Ns 9.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Ka plaster/diffuse.jpg
+map_Kd plaster/diffuse.jpg
+map_Ks plaster/specular.jpg
+map_Bump plaster/normal.jpg
+
+
+newmtl hotel_glas
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 1.000000 1.000000 1.000000
+Ke 0.344000 0.344000 0.344000
+Ni 1.000000
+d 0.300000
+illum 1
+map_Kd glass.jpg
+map_Ka glass.jpg
